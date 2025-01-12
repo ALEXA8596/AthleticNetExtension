@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Athletic Helper</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+</head>
+
+<body>
+  <div class="container">
+    <h1 class="p-3 title">Event Progression</h1>
+    <div class="select m-3">
+      <select name="event" id="eventDropDown" disabled="true">
+      </select>
+    </div>
+    <div class="columns">
+      <div class="column">
+        <canvas id="myChart" class="mx-6" width="auto" height="auto"></canvas>
+      </div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+  <script src="../../../public/luxon.min.js"></script>
+  <script src="../../../public/chart.min.js"></script>
+  <script src="../../../build/bundle.js"></script>
+</body>
+
+</html>

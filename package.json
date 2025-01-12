@@ -1,0 +1,32 @@
+{
+  "name": "athletic-helper",
+  "version": "1.0.0",
+  "description": "An extension giving more insights on athletic performances on Athletic.net and MileSplit",
+  "main": "foreground.js",
+  "type": "commonjs",
+  "scripts": {
+    "build": "babel src --out-dir build --copy-files",
+    "browserify": "browserify src/index.js -o build/bundle.js -t [ babelify --presets [ @babel/preset-env @babel/preset-react ] --plugins [ @babel/plugin-transform-class-properties @babel/plugin-transform-modules-commonjs ] ]"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/cli": "^7.24.8",
+    "@babel/core": "^7.25.2",
+    "@babel/node": "^7.25.0",
+    "@babel/plugin-transform-class-properties": "^7.24.7",
+    "@babel/plugin-transform-modules-commonjs": "^7.24.8",
+    "@babel/preset-env": "^7.25.3",
+    "@babel/preset-react": "^7.24.7",
+    "babelify": "^10.0.0",
+    "browserify": "^17.0.0"
+  },
+  "dependencies": {
+    "@xmldom/xmldom": "^0.8.10",
+    "athletichelper": "^1.1.5",
+    "fetch": "^1.1.0",
+    "jsdom": "^24.1.1",
+    "node-fetch": "^2.6.7"
+  }
+}

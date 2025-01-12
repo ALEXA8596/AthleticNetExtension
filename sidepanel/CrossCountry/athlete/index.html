@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Athletic Helper</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+</head>
+
+<body>
+  <div class="container">
+    <section class="section">
+      <div class="container">
+        <h1 class="title">Athlete Page</h1>
+        <button id='getUrlButton' class="button is-primary">Get URL</button>
+        <p id="current-tab-url" class="content"></p>
+        <!-- DropDown Selector of Events -->
+        <div class="select is-fullwidth">
+          <select name="distance" id="distanceDropDown" disabled="true">
+          </select>
+        </div>
+        <div class="box">
+          <canvas id="myChart" width="400" height="400"></canvas>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="../../../build/bundle.js"></script>
+  <script src="script.js"></script>
+  <script src="../../../public/luxon.min.js"></script>
+  <script src="../../../public/chart.min.js"></script>
+  <script src="../../../public/chartjs-adapter-luxon.js"> </script>
+</body>
+
+</html>

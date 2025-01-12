@@ -1,0 +1,30 @@
+{
+    "manifest_version": 3,
+    "name": "Athletic Helper",
+    "description": "An extension to help Cross Country and Track Athletes",
+    "version": "0.0.1",
+    "icons": {
+        "16": "logo/logo-16.png",
+        "48": "logo/logo-48.png",
+        "128": "logo/logo-128.png"
+    },
+    "action": {
+        "default_title": "Click to Open Side Panel"
+    },
+    
+    "permissions": [
+        "sidePanel",
+        "tabs",
+        "activeTab"
+    ],
+    "host_permissions": [
+    "http://athletic.net/*",
+    "https://athletic.net/*"
+    ],
+    "background": {
+        "service_worker": "service-worker.js"
+    },
+    "side_panel": {
+        "default_path": "sidepanel/index.html"
+    }
+}
