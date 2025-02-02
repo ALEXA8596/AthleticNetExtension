@@ -35,6 +35,12 @@
                 <div class="control">
                   <input id="firstTeam" type="text" class="input" name="teamId">
                 </div>
+                <!-- Suggestions -->
+                <div class="control">
+                  <input id="autocompleteInput" type="text" class="input" placeholder="Search for a team">
+                  <div id="autocompleteSuggestions" class="dropdown-content"></div>
+                </div>
+                <!-- End of Suggestions -->
               </div>
             </div>
           </div>
@@ -116,11 +122,23 @@
                   <div class="control">
                     <input id="dualMeetFirstTeam" type="text" class="input" name="teamId">
                   </div>
+                  <!-- Suggestions -->
+                  <div class="control">
+                    <input id="dualMeetFirstTeamAutocomplete" type="text" class="input" placeholder="Search for a team">
+                    <div class="dropdown-content"></div>
+                  </div>
+                  <!-- End of Suggestions -->
                 </div>
                 <div class="field has-addons">
                   <div class="control">
                     <input id="dualMeetSecondTeam" type="text" class="input" name="teamId">
                   </div>
+                  <!-- Suggestions -->
+                  <div class="control">
+                    <input id="dualMeetSecondTeamAutocomplete" type="text" class="input" placeholder="Search for a team">
+                    <div class="dropdown-content"></div>
+                  </div>
+                  <!-- End of Suggestions -->
                 </div>
               </div>
               <div class="container mt-3">
@@ -140,7 +158,7 @@
         <br>
         <div id="resultsDiv">
           <div id="boys">
-            <table class="table is-striped is-fullwidth">
+            <table class="placementTable table is-striped is-fullwidth">
               <thead>
                 <tr>
                   <th>Place</th>
@@ -151,7 +169,7 @@
                 </tr>
               </thead>
             </table>
-            <table class="table is-striped is-fullwidth">
+            <table class="scoreTable table is-striped is-fullwidth">
               <thead>
                 <tr>
                   <th>Placement</th>
@@ -162,7 +180,7 @@
             </table>
           </div>
           <div id="girls">
-            <table class="table is-striped is-fullwidth">
+            <table class="placementTable table is-striped is-fullwidth">
               <thead>
                 <tr>
                   <th>Place</th>
@@ -173,7 +191,7 @@
                 </tr>
               </thead>
             </table>
-            <table class="table is-striped is-fullwidth">
+            <table class="scoreTable table is-striped is-fullwidth">
               <thead>
                 <tr>
                   <th>Placement</th>

@@ -93,8 +93,23 @@ document
     );
     const results = await simulateMeet(teamIds, teamsData, false);
 
-    updateResults(results);
+    updateResults(results, false);
   });
+
+document.getElementById('teamsInput').addEventListener('submit', async function (event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const teamIds = formData.getAll('teamId');
+    teamsData = {};
+    await Promise.all(
+        teamIds.map(async (teamId) => {
+            teamsData[teamId] = await athleticWrapper.track.team.records.GetTeamEventRecords(teamId, "2024");
+        })
+    );
+    const results = await simulateMeet(teamIds, teamsData, true);
+    updateResults(results, true);
+});
+
 /**
  *
  * @param {Object} teamsData
@@ -432,9 +447,9 @@ async function simulateMeet(teamIds, teamsData, dual) {
   }
 }
 
-function updateResults(results) {
+function updateResults(results, dual) {
   const placementResults = results.results;
-  const resultsDiv = document.getElementById("nonDualMeetResultsDiv");
+  const resultsDiv = dual ? document.getElementById("resultsDiv") : document.getElementById("nonDualMeetResultsDiv");
   ["boys", "girls"].forEach(async (gender) => {
     let genderAbbr;
     if (gender == "boys") genderAbbr = "M";
@@ -532,7 +547,54 @@ $("#rowAdder").click(function () {
                 <div class="control">
                     <input type="text" class="input" name="teamId">
                 </div>
+                <div class="control">
+                    <input type="text" class="input autocompleteInput" placeholder="Search for a team">
+                    <div class="dropdown-content"></div>
+                </div>
             </div>
         </div>`;
   $("#listOfIDs").append(newRowAdd);
+
+  // Add autocomplete to the new input field
+  const newInput = $('#listOfIDs .column:last-child .autocompleteInput')[0];
+  addAutocomplete(newInput);
 });
+
+function addAutocomplete(inputElement) {
+    inputElement.addEventListener('input', async function () {
+        const query = this.value;
+        if (query.length < 3) {
+            inputElement.nextElementSibling.innerHTML = '';
+            return;
+        }
+        const suggestions = await fetchTeamSuggestions(query);
+        displaySuggestions(suggestions, inputElement);
+    });
+}
+
+function displaySuggestions(suggestions, inputElement) {
+    const suggestionsContainer = inputElement.nextElementSibling;
+    suggestionsContainer.innerHTML = '';
+    suggestions.forEach(team => {
+        const suggestionItem = document.createElement('div');
+        suggestionItem.classList.add('dropdown-item');
+        suggestionItem.textContent = team.textsuggest;
+        suggestionItem.addEventListener('click', () => {
+            inputElement.value = team.textsuggest;
+            inputElement.closest('.field').querySelector('input[name="teamId"]').value = team.id_db;
+            suggestionsContainer.innerHTML = '';
+        });
+        suggestionsContainer.appendChild(suggestionItem);
+    });
+}
+
+async function fetchTeamSuggestions(query) {
+    // Replace with actual API call to fetch team suggestions
+    const response = await window.athleticWrapper.search.AutoComplete(query);
+    return response.response.docs.filter(doc => doc.type === "Team");
+}
+
+// Initialize autocomplete for the initial input fields
+addAutocomplete(document.getElementById('autocompleteInput'));
+addAutocomplete(document.getElementById('dualMeetFirstTeamAutocomplete'));
+addAutocomplete(document.getElementById('dualMeetSecondTeamAutocomplete'));

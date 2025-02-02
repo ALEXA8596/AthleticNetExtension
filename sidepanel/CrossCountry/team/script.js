@@ -139,6 +139,37 @@ function timeInSecondsToMMSSMS(time) {
     return `${minutes}:${seconds}.${milliseconds}`;
 }
 
+function addAutocomplete(inputElement) {
+    inputElement.addEventListener('input', async function () {
+        const query = this.value;
+        if (query.length < 3) {
+            inputElement.nextElementSibling.innerHTML = '';
+            return;
+        }
+        const suggestions = await fetchTeamSuggestions(query);
+        displaySuggestions(suggestions, inputElement);
+    });
+}
+
+function displaySuggestions(suggestions, inputElement) {
+    const suggestionsContainer = inputElement.nextElementSibling;
+    suggestionsContainer.innerHTML = '';
+    suggestions.forEach(team => {
+        const suggestionItem = document.createElement('div');
+        suggestionItem.classList.add('dropdown-item');
+        suggestionItem.textContent = team.textsuggest;
+        suggestionItem.addEventListener('click', () => {
+            inputElement.value = team.textsuggest;
+            inputElement.closest('.column').querySelector('input[name="teamId"]').value = team.id_db;
+            suggestionsContainer.innerHTML = '';
+        });
+        suggestionsContainer.appendChild(suggestionItem);
+    });
+}
+
+// Initialize autocomplete for the initial input field
+addAutocomplete(document.getElementById('autocompleteInput'));
+
 $("#rowAdder").click(function () {
     const newRowAdd = `
         <div class="column">
@@ -152,9 +183,17 @@ $("#rowAdder").click(function () {
                 <div class="control">
                     <input type="text" class="input" name="teamId">
                 </div>
+                <div class="control">
+                    <input type="text" class="input autocompleteInput" placeholder="Search for a team">
+                    <div class="dropdown-content"></div>
+                </div>
             </div>
         </div>`;
     $('#listOfIDs').append(newRowAdd);
+
+    // Add autocomplete to the new input field
+    const newInput = $('#listOfIDs .column:last-child .autocompleteInput')[0];
+    addAutocomplete(newInput);
 });
 
 $("body").on("click", "#DeleteRow", function () {
@@ -184,6 +223,37 @@ document.getElementById('distance').addEventListener('change', async function ()
     updateResults(results);
 });
 
+document.getElementById('autocompleteInput').addEventListener('input', async function () {
+    const query = this.value;
+    if (query.length < 3) {
+        document.getElementById('autocompleteSuggestions').innerHTML = '';
+        return;
+    }
+    const suggestions = await fetchTeamSuggestions(query);
+    displaySuggestions(suggestions);
+});
+
+async function fetchTeamSuggestions(query) {
+    // Replace with actual API call to fetch team suggestions
+    const response = await window.athleticWrapper.search.AutoComplete(query);
+    return response.response.docs.filter(doc => doc.type === "Team");
+}
+
+function displaySuggestions(suggestions) {
+    const suggestionsContainer = document.getElementById('autocompleteSuggestions');
+    suggestionsContainer.innerHTML = '';
+    suggestions.forEach(team => {
+        const suggestionItem = document.createElement('div');
+        suggestionItem.classList.add('dropdown-item');
+        suggestionItem.innerHTML = team.textsuggest + " <small>" + team.subtext + "</small>";
+        suggestionItem.addEventListener('click', () => {
+            document.getElementById('autocompleteInput').value = team.textsuggest + " " + team.subtext;
+            document.getElementById('firstTeam').value = team.id_db;
+            suggestionsContainer.innerHTML = '';
+        });
+        suggestionsContainer.appendChild(suggestionItem);
+    });
+}
 
 document.getElementById('listOfIDs').addEventListener('paste', function(event) {
     event.preventDefault();
