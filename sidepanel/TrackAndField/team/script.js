@@ -81,10 +81,10 @@ document
     event.preventDefault();
     const formData = new FormData(event.target);
     const teamIds = formData.getAll("teamId");
-    const year = formData.get('nonDualMeetYear');
+    const year = formData.get("nonDualMeetYear");
     const currentYear = new Date().getFullYear();
     if (year > currentYear) {
-      return alert('Pick a valid year!')
+      return alert("Pick a valid year!");
     }
     teamsData = {};
     await Promise.all(
@@ -101,28 +101,32 @@ document
     updateResults(results, false);
   });
 
-  //Dual Meet
+//Dual Meet
 document
-.getElementById('teamsInput')
-.addEventListener('submit', async function (event) {
+  .getElementById("teamsInput")
+  .addEventListener("submit", async function (event) {
     event.preventDefault();
     const formData = new FormData(event.target);
-    const teamIds = formData.getAll('teamId');
-    const year = formData.get('dualMeetYear');
+    const teamIds = formData.getAll("teamId");
+    const year = formData.get("dualMeetYear");
     // get today's year and check if its greater than or equal to the submitted year
     const currentYear = new Date().getFullYear();
     if (year > currentYear) {
-      return alert('Pick a valid year!')
+      return alert("Pick a valid year!");
     }
     teamsData = {};
     await Promise.all(
-        teamIds.map(async (teamId) => {
-            teamsData[teamId] = await athleticWrapper.track.team.records.GetTeamEventRecords(teamId, year);
-        })
+      teamIds.map(async (teamId) => {
+        teamsData[teamId] =
+          await athleticWrapper.track.team.records.GetTeamEventRecords(
+            teamId,
+            year
+          );
+      })
     );
     const results = await simulateMeet(teamIds, teamsData, true);
     updateResults(results, true);
-});
+  });
 
 /**
  *
@@ -215,40 +219,40 @@ async function simulateMeet(teamIds, teamsData, dual) {
     // Tally up the male points
     for (const event of maleCountedEvents) {
       if (events.M[event]) {
+        console.log(event);
         // 1st place gets 5 points, 2nd place gets 3 points, 3rd place gets 1 point
         // If the event is a relay, give the winner 5 and the loser 0
+        console.log(event.includes("Relay"));
         if (event.includes("Relay")) {
           if (events.M[event][0]) {
             if (!points.M[events.M[event][0].SchoolID]) {
               points.M[events.M[event][0].SchoolID] = 0;
             }
             points.M[events.M[event][0].SchoolID] += 5;
+            console.log("awarded 5 points to " + events.M[event][0].SchoolID);
+          }
+        } else {
+          if (events.M[event][0]) {
+            if (!points.M[events.M[event][0].SchoolID]) {
+              points.M[events.M[event][0].SchoolID] = 0;
+            }
+            points.M[events.M[event][0].SchoolID] += 5;
+            console.log("awarded 5 points to " + events.M[event][0].SchoolID);
           }
           if (events.M[event][1]) {
             if (!points.M[events.M[event][1].SchoolID]) {
               points.M[events.M[event][1].SchoolID] = 0;
             }
-            points.M[events.M[event][1].SchoolID] += 0;
+            points.M[events.M[event][1].SchoolID] += 3;
+            console.log("awarded 3 points to " + events.M[event][1].SchoolID);
           }
-          continue;
-        }
-        if (events.M[event][0]) {
-          if (!points.M[events.M[event][0].SchoolID]) {
-            points.M[events.M[event][0].SchoolID] = 0;
+          if (events.M[event][2]) {
+            if (!points.M[events.M[event][2].SchoolID]) {
+              points.M[events.M[event][2].SchoolID] = 0;
+            }
+            points.M[events.M[event][2].SchoolID] += 1;
+            console.log("awarded 1 point to " + events.M[event][2].SchoolID);
           }
-          points.M[events.M[event][0].SchoolID] += 5;
-        }
-        if (events.M[event][1]) {
-          if (!points.M[events.M[event][1].SchoolID]) {
-            points.M[events.M[event][1].SchoolID] = 0;
-          }
-          points.M[events.M[event][1].SchoolID] += 3;
-        }
-        if (events.M[event][2]) {
-          if (!points.M[events.M[event][2].SchoolID]) {
-            points.M[events.M[event][2].SchoolID] = 0;
-          }
-          points.M[events.M[event][2].SchoolID] += 1;
         }
       }
     }
@@ -270,26 +274,25 @@ async function simulateMeet(teamIds, teamsData, dual) {
             }
             points.F[events.F[event][1].SchoolID] += 0;
           }
-          continue;
-        }
-
-        if (events.F[event][0]) {
-          if (!points.F[events.F[event][0].SchoolID]) {
-            points.F[events.F[event][0].SchoolID] = 0;
+        } else {
+          if (events.F[event][0]) {
+            if (!points.F[events.F[event][0].SchoolID]) {
+              points.F[events.F[event][0].SchoolID] = 0;
+            }
+            points.F[events.F[event][0].SchoolID] += 5;
           }
-          points.F[events.F[event][0].SchoolID] += 5;
-        }
-        if (events.F[event][1]) {
-          if (!points.F[events.F[event][1].SchoolID]) {
-            points.F[events.F[event][1].SchoolID] = 0;
+          if (events.F[event][1]) {
+            if (!points.F[events.F[event][1].SchoolID]) {
+              points.F[events.F[event][1].SchoolID] = 0;
+            }
+            points.F[events.F[event][1].SchoolID] += 3;
           }
-          points.F[events.F[event][1].SchoolID] += 3;
-        }
-        if (events.F[event][2]) {
-          if (!points.F[events.F[event][2].SchoolID]) {
-            points.F[events.F[event][2].SchoolID] = 0;
+          if (events.F[event][2]) {
+            if (!points.F[events.F[event][2].SchoolID]) {
+              points.F[events.F[event][2].SchoolID] = 0;
+            }
+            points.F[events.F[event][2].SchoolID] += 1;
           }
-          points.F[events.F[event][2].SchoolID] += 1;
         }
       }
     }
@@ -307,6 +310,15 @@ async function simulateMeet(teamIds, teamsData, dual) {
     );
     const opposingTeamName = opposingTeamInfo.team.Name;
     // reformat results, so that the results
+
+    console.log({
+      teamNames: {
+        homeTeamId: homeTeamName,
+        opposingTeamId: opposingTeamName,
+      },
+      points,
+      results: events,
+    });
 
     return {
       teamNames: {
@@ -463,7 +475,9 @@ async function simulateMeet(teamIds, teamsData, dual) {
 
 function updateResults(results, dual) {
   const placementResults = results.results;
-  const resultsDiv = dual ? document.getElementById("resultsDiv") : document.getElementById("nonDualMeetResultsDiv");
+  const resultsDiv = dual
+    ? document.getElementById("resultsDiv")
+    : document.getElementById("nonDualMeetResultsDiv");
   ["boys", "girls"].forEach(async (gender) => {
     let genderAbbr;
     if (gender == "boys") genderAbbr = "M";
@@ -481,7 +495,11 @@ function updateResults(results, dual) {
         row.innerHTML = `
                 <td>${j + 1}</td>
                 <td>${record.GradeID ? record.GradeID : ""}</td>
-                <td>${record.FirstName + " " + (record.LastName ? record.LastName : "")}</td>
+                <td>${
+                  record.FirstName +
+                  " " +
+                  (record.LastName ? record.LastName : "")
+                }</td>
                 <td>${
                   record.Type == "T"
                     ? timeInMillisecondsToSecondsOrMMSS(record.SortInt)
@@ -494,7 +512,6 @@ function updateResults(results, dual) {
     });
   });
 
-  
   ["boys", "girls"].forEach(async (gender) => {
     if (gender == "boys") genderAbbr = "M";
     if (gender == "girls") genderAbbr = "F";
@@ -531,10 +548,10 @@ function timeInMillisecondsToSecondsOrMMSS(time) {
 }
 
 function fieldEventDistanceToFTIN(distance) {
-    const inches = (20000000 - distance) / 1000;
-    const feet = Math.floor(inches / 12);
-    const remainingInches = inches % 12;
-    return `${feet}'${remainingInches}"`;
+  const inches = (20000000 - distance) / 1000;
+  const feet = Math.floor(inches / 12);
+  const remainingInches = inches % 12;
+  return `${feet}'${remainingInches}"`;
 }
 
 document
@@ -571,45 +588,47 @@ $("#rowAdder").click(function () {
   $("#listOfIDs").append(newRowAdd);
 
   // Add autocomplete to the new input field
-  const newInput = $('#listOfIDs .column:last-child .autocompleteInput')[0];
+  const newInput = $("#listOfIDs .column:last-child .autocompleteInput")[0];
   addAutocomplete(newInput);
 });
 
 function addAutocomplete(inputElement) {
-    inputElement.addEventListener('input', async function () {
-        const query = this.value;
-        if (query.length < 3) {
-            inputElement.nextElementSibling.innerHTML = '';
-            return;
-        }
-        const suggestions = await fetchTeamSuggestions(query);
-        displaySuggestions(suggestions, inputElement);
-    });
+  inputElement.addEventListener("input", async function () {
+    const query = this.value;
+    if (query.length < 3) {
+      inputElement.nextElementSibling.innerHTML = "";
+      return;
+    }
+    const suggestions = await fetchTeamSuggestions(query);
+    displaySuggestions(suggestions, inputElement);
+  });
 }
 
 function displaySuggestions(suggestions, inputElement) {
-    const suggestionsContainer = inputElement.nextElementSibling;
-    suggestionsContainer.innerHTML = '';
-    suggestions.forEach(team => {
-        const suggestionItem = document.createElement('div');
-        suggestionItem.classList.add('dropdown-item');
-        suggestionItem.textContent = team.textsuggest;
-        suggestionItem.addEventListener('click', () => {
-            inputElement.value = team.textsuggest;
-            inputElement.closest('.field').querySelector('input[name="teamId"]').value = team.id_db;
-            suggestionsContainer.innerHTML = '';
-        });
-        suggestionsContainer.appendChild(suggestionItem);
+  const suggestionsContainer = inputElement.nextElementSibling;
+  suggestionsContainer.innerHTML = "";
+  suggestions.forEach((team) => {
+    const suggestionItem = document.createElement("div");
+    suggestionItem.classList.add("dropdown-item");
+    suggestionItem.textContent = team.textsuggest;
+    suggestionItem.addEventListener("click", () => {
+      inputElement.value = team.textsuggest;
+      inputElement
+        .closest(".field")
+        .querySelector('input[name="teamId"]').value = team.id_db;
+      suggestionsContainer.innerHTML = "";
     });
+    suggestionsContainer.appendChild(suggestionItem);
+  });
 }
 
 async function fetchTeamSuggestions(query) {
-    // Replace with actual API call to fetch team suggestions
-    const response = await window.athleticWrapper.search.AutoComplete(query);
-    return response.response.docs.filter(doc => doc.type === "Team");
+  // Replace with actual API call to fetch team suggestions
+  const response = await window.athleticWrapper.search.AutoComplete(query);
+  return response.response.docs.filter((doc) => doc.type === "Team");
 }
 
 // Initialize autocomplete for the initial input fields
-addAutocomplete(document.getElementById('autocompleteInput'));
-addAutocomplete(document.getElementById('dualMeetFirstTeamAutocomplete'));
-addAutocomplete(document.getElementById('dualMeetSecondTeamAutocomplete'));
+addAutocomplete(document.getElementById("autocompleteInput"));
+addAutocomplete(document.getElementById("dualMeetFirstTeamAutocomplete"));
+addAutocomplete(document.getElementById("dualMeetSecondTeamAutocomplete"));
