@@ -98,7 +98,7 @@ document
     );
     const results = await simulateMeet(teamIds, teamsData, false);
 
-    updateResults(results, false);
+    await updateResults(results, false);
   });
 
 //Dual Meet
@@ -125,7 +125,7 @@ document
       })
     );
     const results = await simulateMeet(teamIds, teamsData, true);
-    updateResults(results, true);
+    await updateResults(results, true);
   });
 
 /**
@@ -170,6 +170,13 @@ async function simulateMeet(teamIds, teamsData, dual) {
     for (const gender in events) {
       for (const event in events[gender]) {
         events[gender][event].sort((a, b) => a.SortInt - b.SortInt);
+      }
+    }
+
+    // slice the arrays to only include the top 10
+    for (const gender in events) {
+      for (const event in events[gender]) {
+        events[gender][event] = events[gender][event].slice(0, 10);
       }
     }
 
@@ -473,7 +480,7 @@ async function simulateMeet(teamIds, teamsData, dual) {
   }
 }
 
-function updateResults(results, dual) {
+async function updateResults(results, dual) {
   const placementResults = results.results;
   const resultsDiv = dual
     ? document.getElementById("resultsDiv")
@@ -484,7 +491,10 @@ function updateResults(results, dual) {
     if (gender == "girls") genderAbbr = "F";
     const genderResults = placementResults[genderAbbr];
     const table = resultsDiv.querySelector(`#${gender} .placementTable`);
-    table.innerHTML = "";
+    // Clear table contents except for the header row
+    while (table.rows.length > 1) {
+      table.deleteRow(1);
+    }
     Object.values(genderResults).forEach((event, i) => {
       const eventTitle = document.createElement("h1");
       eventTitle.textContent = event[0].Event;
@@ -493,49 +503,50 @@ function updateResults(results, dual) {
       event.forEach((record, j) => {
         const row = document.createElement("tr");
         row.innerHTML = `
-                <td>${j + 1}</td>
-                <td>${record.GradeID ? record.GradeID : ""}</td>
-                <td>${
+                <td class="py-1 px-1" style="font-size: 10px;">${j + 1}</td>
+                <td class="py-1 px-1" style="font-size: 10px;">${record.GradeID ? record.GradeID : ""}</td>
+                <td class="py-1 px-1" style="font-size: 10px;">${
                   record.FirstName +
                   " " +
                   (record.LastName ? record.LastName : "")
                 }</td>
-                <td>${
+                <td class="py-1 px-1" style="font-size: 10px;">${
                   record.Type == "T"
                     ? timeInMillisecondsToSecondsOrMMSS(record.SortInt)
                     : fieldEventDistanceToFTIN(record.SortInt)
                 }</td>
-                <td>${record.SchoolID}</td>
+                <td class="py-1 px-1" style="font-size: 10px;">${record.SchoolID}</td>
             `;
         table.appendChild(row);
       });
     });
   });
 
-  ["boys", "girls"].forEach(async (gender) => {
-    if (gender == "boys") genderAbbr = "M";
-    if (gender == "girls") genderAbbr = "F";
+  await Promise.all(["boys", "girls"].map(async (gender) => {
+    let genderAbbr = gender === "boys" ? "M" : "F";
     results.points[genderAbbr] = Object.fromEntries(
-      Object.entries(results.points[genderAbbr]).sort((a, b) => a[1] - b[1])
+      Object.entries(results.points[genderAbbr]).sort((a, b) => b[1] - a[1])
     );
     const scoreTable = resultsDiv.querySelector(`#${gender} > .scoreTable`);
     scoreTable.innerHTML = "";
-    for (var teamId in results.points[genderAbbr]) {
-      const teamScore =
-        results.points[genderAbbr][teamId] !== 0
-          ? results.points[genderAbbr][teamId]
-          : "DNP";
-      const teamName = (await athleticWrapper.track.team.GetTeamCore(teamId))[
-        "team"
-      ]["Name"];
+    
+    const teamEntries = await Promise.all(
+      Object.entries(results.points[genderAbbr]).map(async ([teamId, points]) => {
+        const teamScore = points !== 0 ? points : "DNP";
+        const teamData = await athleticWrapper.track.team.GetTeamCore(teamId);
+        return { teamName: teamData.team.Name, teamScore };
+      })
+    );
+    
+    teamEntries.forEach(({ teamName, teamScore }) => {
       const teamRow = document.createElement("tr");
       teamRow.innerHTML = `
                 <td>${teamName}</td>
                 <td>${teamScore}</td>
             `;
       scoreTable.appendChild(teamRow);
-    }
-  });
+    });
+  }));
 }
 
 function timeInMillisecondsToSecondsOrMMSS(time) {
