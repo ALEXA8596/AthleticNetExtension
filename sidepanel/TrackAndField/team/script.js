@@ -15,7 +15,9 @@ function openPage(pageName, elmnt, color) {
   elmnt.style.backgroundColor = color;
 }
 
-document.getElementById("defaultOpen").click();
+document.addEventListener("DOMContentLoaded", function () {
+  document.getElementById("defaultOpen").click();
+});
 
 window.onload = function () {
   chrome.runtime.sendMessage(
@@ -329,8 +331,8 @@ async function simulateMeet(teamIds, teamsData, dual) {
 
     return {
       teamNames: {
-        homeTeamId: homeTeamName,
-        opposingTeamId: opposingTeamName,
+      [homeTeamId]: homeTeamName,
+      [opposingTeamId]: opposingTeamName,
       },
       points,
       results: events,
@@ -515,7 +517,7 @@ async function updateResults(results, dual) {
                     ? timeInMillisecondsToSecondsOrMMSS(record.SortInt)
                     : fieldEventDistanceToFTIN(record.SortInt)
                 }</td>
-                <td class="py-1 px-1" style="font-size: 10px;">${record.SchoolID}</td>
+                <td class="py-1 px-1" style="font-size: 10px;">${results.teamNames[record.SchoolID] ? results.teamNames[record.SchoolID] : record.SchoolID}</td>
             `;
         table.appendChild(row);
       });
