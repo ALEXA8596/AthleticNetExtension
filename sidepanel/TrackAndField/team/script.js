@@ -81,13 +81,18 @@ document
     event.preventDefault();
     const formData = new FormData(event.target);
     const teamIds = formData.getAll("teamId");
+    const year = formData.get('nonDualMeetYear');
+    const currentYear = new Date().getFullYear();
+    if (year > currentYear) {
+      return alert('Pick a valid year!')
+    }
     teamsData = {};
     await Promise.all(
       teamIds.map(async (teamId) => {
         teamsData[teamId] =
           await athleticWrapper.track.team.records.GetTeamEventRecords(
             teamId,
-            "2024"
+            year
           );
       })
     );
@@ -96,14 +101,23 @@ document
     updateResults(results, false);
   });
 
-document.getElementById('teamsInput').addEventListener('submit', async function (event) {
+  //Dual Meet
+document
+.getElementById('teamsInput')
+.addEventListener('submit', async function (event) {
     event.preventDefault();
     const formData = new FormData(event.target);
     const teamIds = formData.getAll('teamId');
+    const year = formData.get('dualMeetYear');
+    // get today's year and check if its greater than or equal to the submitted year
+    const currentYear = new Date().getFullYear();
+    if (year > currentYear) {
+      return alert('Pick a valid year!')
+    }
     teamsData = {};
     await Promise.all(
         teamIds.map(async (teamId) => {
-            teamsData[teamId] = await athleticWrapper.track.team.records.GetTeamEventRecords(teamId, "2024");
+            teamsData[teamId] = await athleticWrapper.track.team.records.GetTeamEventRecords(teamId, year);
         })
     );
     const results = await simulateMeet(teamIds, teamsData, true);
@@ -480,13 +494,14 @@ function updateResults(results, dual) {
     });
   });
 
+  
   ["boys", "girls"].forEach(async (gender) => {
     if (gender == "boys") genderAbbr = "M";
     if (gender == "girls") genderAbbr = "F";
     results.points[genderAbbr] = Object.fromEntries(
       Object.entries(results.points[genderAbbr]).sort((a, b) => a[1] - b[1])
     );
-    const scoreTable = document.querySelector(`#${gender} > .scoreTable`);
+    const scoreTable = resultsDiv.querySelector(`#${gender} > .scoreTable`);
     scoreTable.innerHTML = "";
     for (var teamId in results.points[genderAbbr]) {
       const teamScore =

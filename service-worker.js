@@ -116,4 +116,90 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       });
     });
   }
+  // if (request.action === "refresh_side_panel") {
+  //   console.log('refreshing side panel');
+  //   // run the same logic as on tab update
+  //   chrome.tabs.query({currentWindow: true, active: true}, (tabs) => {
+  //     if (tabs.length > 0) {
+  //       const activeTab = tabs[0];
+  //       const url = new URL(activeTab.url);
+  //       console.log(url.origin);
+  //       console.log(url)
+  //       if (url.origin === "https://www.athletic.net") {
+  //         switch (url.pathname.split("/")[1]) {
+  //           case "TrackAndField":
+  //             switch (url.pathname.split("/")[2]) {
+  //               case "meet":
+  //                 if (url.pathname.split("/")[4] === "results") {
+  //                   if (url.pathname.split("/")[5] === "all") {
+  //                     chrome.sidePanel.setOptions({
+  //                       tabId: activeTab.id,
+  //                       path: 'sidepanel/TrackAndField/meet/allResults.html',
+  //                       enabled: true
+  //                     });
+  //                   } else if (url.pathname.split("/")[5] && url.pathname.split("/")[6] && url.pathname.split("/")[7]) {
+  //                     chrome.sidePanel.setOptions({
+  //                       tabId: activeTab.id,
+  //                       path: 'sidepanel/TrackAndField/meet/eventResults.html',
+  //                       enabled: true
+  //                     });
+  //                   }
+  //                 }
+  //             }
+  //             break;
+  //           case "CrossCountry":
+  //             switch (url.pathname.split("/")[2]) {
+  //               case "meet":
+  //                 chrome.sidePanel.setOptions({
+  //                   tabId: activeTab.id,
+  //                   path: 'sidepanel/CrossCountry/meet/index.html',
+  //                   enabled: true
+  //                 });
+  //                 break;
+  //             }
+  //             break;
+  //           case "team":
+  //             if (url.pathname.split("/")[3] === "cross-country") {
+  //               chrome.sidePanel.setOptions({
+  //                 tabId: activeTab.id,
+  //                 path: 'sidepanel/CrossCountry/team/index.html',
+  //                 enabled: true
+  //               });
+  //             } else if (url.pathname.split("/")[3] === "track-and-field-outdoor") {
+  //               console.log("hi")
+  //               chrome.sidePanel.setOptions({
+  //                 tabId: activeTab.id,
+  //                 path: 'sidepanel/TrackAndField/team/index.html',
+  //                 enabled: false
+  //               });
+
+  //             }
+  //             break;
+  //           case "athlete":
+  //             if (url.pathname.split("/")[3] === "cross-country") {
+  //               chrome.sidePanel.setOptions({
+  //                 tabId: activeTab.id,
+  //                 path: 'sidepanel/CrossCountry/athlete/index.html',
+  //                 enabled: true
+  //               });
+  //             } else if (url.pathname.split("/")[3] === "track-and-field") {
+  //               chrome.sidePanel.setOptions({
+  //                 tabId: activeTab.id,
+  //                 path: 'sidepanel/TrackAndField/athlete/index.html',
+  //                 enabled: true
+  //               });
+  //             }
+  //             break;
+  //         }
+  //         // refresh side panel
+          
+  //       } else {
+  //         chrome.sidePanel.setOptions({
+  //           tabId: activeTab.id,
+  //           enabled: false
+  //         });
+  //       }
+  //     }
+  //   })
+  // }
 });
