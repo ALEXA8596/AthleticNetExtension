@@ -494,7 +494,7 @@ async function updateResults(results, dual) {
     const genderResults = placementResults[genderAbbr];
     const table = resultsDiv.querySelector(`#${gender} .placementTable`);
     // Clear table contents except for the header row
-    while (table.rows.length > 1) {
+    while (table.rows.length > 0) {
       table.deleteRow(1);
     }
     Object.values(genderResults).forEach((event, i) => {
