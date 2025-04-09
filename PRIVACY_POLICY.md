@@ -1,0 +1,1 @@
+This extension accesses your tabs, your active tab, and your current url to gain information and provide you a service. No information is collected, stored, or sold.

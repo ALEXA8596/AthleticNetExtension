@@ -13,208 +13,217 @@
 
 <body>
   <div class="container">
-    <h1 class="p-3 title">Track And Field Meet Simulator</h1>
-    <button name="nonDualMeetButton" id="defaultOpen" class="tablink" style="border-top-left-radius: 8px;">Invitational / Non-Dual Meet</button>
-    <button name="dualMeetButton" class="tablink" style="border-top-right-radius: 8px;">Dual Meet</button>
-    <div id="nonDualMeet" class="tabcontent" class="tablink" style="border-radius: 8px;">
-      <h1 class="p-3 subtitle has-text-black">Non - Dual Meet / Invitational / Sectional / League / State Meet Simulator</h1>
-      <p class="p-3 has-text-black">
-        This page simulates an invitational or multi-team meet between two or more teams.
-      </p>
-      <div class="container box">
-        <form id="teamsInputNonDualMeet">
-          <div id="listOfIDs" class="px-0">
-            <div class="column px-0">
-              <div class="field has-addons ">
-                <div class="control">
-                  <button class="button is-danger" id="DeleteRow" type="button">
-                    <i class="bi bi-trash"></i>
-                    Delete
-                  </button>
+    <section class="section">
+      <h1 class="p-3 title pageTitle">Track And Field Meet Simulator</h1>
+      <button name="nonDualMeetButton" id="defaultOpen" class="tablink" style="border-top-left-radius: 8px;">Invitational / Non-Dual Meet</button>
+      <button name="dualMeetButton" class="tablink" style="border-top-right-radius: 8px;">Dual Meet</button>
+      <div id="nonDualMeet" class="tabcontent" class="tablink" style="border-radius: 8px;">
+        <h1 class="p-3 subtitle has-text-black">Non - Dual Meet / Invitational / Sectional / League / State Meet Simulator</h1>
+        <p class="p-3 has-text-black">
+          This page simulates an invitational or multi-team meet between two or more teams.
+        </p>
+        <div class="container box">
+          <form id="teamsInputNonDualMeet">
+            <div id="listOfIDs" class="px-0">
+              <div class="column px-0">
+                <div class="field has-addons ">
+                  <div class="control">
+                    <button class="button is-danger" id="DeleteRow" type="button">
+                      <i class="bi bi-trash"></i>
+                      Delete
+                    </button>
+                  </div>
+                  <div class="control">
+                    <input id="firstTeam" type="text" class="input" name="teamId">
+                  </div>
+                  <!-- Suggestions -->
+                  <div class="control">
+                    <input id="autocompleteInput" type="text" class="input" placeholder="Search for a team">
+                    <div id="autocompleteSuggestions" class="dropdown-content"></div>
+                  </div>
+                  <!-- End of Suggestions -->
                 </div>
-                <div class="control">
-                  <input id="firstTeam" type="text" class="input" name="teamId">
-                </div>
-                <!-- Suggestions -->
-                <div class="control">
-                  <input id="autocompleteInput" type="text" class="input" placeholder="Search for a team">
-                  <div id="autocompleteSuggestions" class="dropdown-content"></div>
-                </div>
-                <!-- End of Suggestions -->
               </div>
             </div>
-          </div>
 
-          <button id="rowAdder" type="button" class="button is-dark">
-            <span class="bi bi-plus-square-dotted"></span> Add Team
-          </button>
+            <button id="rowAdder" type="button" class="button is-dark">
+              <span class="bi bi-plus-square-dotted"></span> Add Team
+            </button>
+            <br>
+            <!-- Add Year Picker -->
+            <input id="nonDualMeetYear" type="number" min="2000" max="2099" step="1" value="2025" class="input is-primary mt-3" style="width: 25%" />
+
+
+            <div class="container mt-3">
+              <button type="submit" id="simulateButton" class="button is-primary">Simulate</button>
+            </div>
+          </form>
+
           <br>
-          <!-- Add Year Picker -->
-          <input id="nonDualMeetYear" type="number" min="2000" max="2099" step="1" value="2025" class="input is-primary mt-3" style="width: 25%" />
+          <div id="nonDualMeetResultsDiv">
+            <div id="boys">
+              <h4 class="title is-4">Boys</h4>
 
+              <table class="placementTable table is-striped is-fullwidth">
+                <thead>
+                  <tr>
+                    <th class="py-2 px-3">Place</th>
+                    <th class="py-2 px-3">Grade</th>
+                    <th class="py-2 px-3">Name</th>
+                    <th class="py-2 px-3">Time</th>
+                    <th class="py-2 px-3">Team</th>
+                  </tr>
+                </thead>
+              </table>
 
-          <div class="container mt-3">
-            <button type="submit" id="simulateButton" class="button is-primary">Simulate</button>
-          </div>
-        </form>
-
-        <br>
-        <div id="nonDualMeetResultsDiv" class="columns">
-          <div id="boys" class="column">
-            <h4 class="title is-4">Boys</h4>
-
-            <table class="placementTable table is-striped is-fullwidth">
-              <thead>
-                <tr>
-                  <th class="py-2 px-3">Place</th>
-                  <th class="py-2 px-3">Grade</th>
-                  <th class="py-2 px-3">Name</th>
-                  <th class="py-2 px-3">Time</th>
-                  <th class="py-2 px-3">Team</th>
-                </tr>
-              </thead>
-            </table>
-
-            <table class="scoreTable table is-striped is-fullwidth">
-              <thead>
-                <tr>
-                  <!-- <th>Placement</th> -->
-                  <th>Team</th>
-                  <th>Score</th>
-                </tr>
-              </thead>
-            </table>
-          </div>
-          <div id="girls" class="column">
-            <h4 class="title is-4">Girls</h4>
-            <table class="placementTable table is-striped is-fullwidth">
-              <thead>
-                <tr>
-                  <th class="py-2 px-3">Place</th>
-                  <th class="py-2 px-3">Grade</th>
-                  <th class="py-2 px-3">Name</th>
-                  <th class="py-2 px-3">Time</th>
-                  <th class="py-2 px-3">Team</th>
-                </tr>
-              </thead>
-            </table>
-            <table class="scoreTable table is-striped is-fullwidth">
-              <thead>
-                <tr>
-                  <!-- <th>Placement</th> -->
-                  <th>Team</th>
-                  <th>Score</th>
-                </tr>
-              </thead>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div id="dualMeet" class="tabcontent" style="border-radius: 8px;">
-      <h1 class="p-3 subtitle has-text-black">Dual Meet Simulator</h1>
-      <p class="p-3 has-text-black">
-        This page simulates a dual meet between two teams. (The team on the
-        current website, and the team provided)
-      </p>
-      <!-- Create a textbox using bulma for the opposing team's id -->
-      <div class="container box ">
-        <div class="columns">
-          <div class="column">
-            <form id="teamsInput">
-              <div id="dualMeetTeams">
-                <div class="field has-addons">
-                  <div class="control">
-                    <input id="dualMeetFirstTeam" type="text" class="input" name="teamId">
-                  </div>
-                  <!-- Suggestions -->
-                  <div class="control">
-                    <input id="dualMeetFirstTeamAutocomplete" type="text" class="input" placeholder="Search for a team">
-                    <div class="dropdown-content"></div>
-                  </div>
-                  <!-- End of Suggestions -->
-                </div>
-                <div class="field has-addons">
-                  <div class="control">
-                    <input id="dualMeetSecondTeam" type="text" class="input" name="teamId">
-                  </div>
-                  <!-- Suggestions -->
-                  <div class="control">
-                    <input id="dualMeetSecondTeamAutocomplete" type="text" class="input" placeholder="Search for a team">
-                    <div class="dropdown-content"></div>
-                  </div>
-                  <!-- End of Suggestions -->
-                </div>
-              </div>
-
-              <input id="dualMeetYear" type="number" min="2000" max="2099" step="1" value="2025" class="input is-primary mt-3" style="width: 25%"/>
-
-              <div class="container mt-3">
-                <button type="submit" id="dualMeetSimulateButton" class="button is-primary">Simulate</button>
-              </div>
-            </form>
-          </div>
-          <div class="column">
-            <div class="container">
-              <div class="container box">
-                <h4 class="title is-4 is-text-white">Analysis</h4>
-              </div>
+              <table class="scoreTable table is-striped is-fullwidth">
+                <thead>
+                  <tr>
+                    <!-- <th>Placement</th> -->
+                    <th>Team</th>
+                    <th>Score</th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+            <br>
+            <div id="girls">
+              <h4 class="title is-4">Girls</h4>
+              <table class="placementTable table is-striped is-fullwidth">
+                <thead>
+                  <tr>
+                    <th class="py-2 px-3">Place</th>
+                    <th class="py-2 px-3">Grade</th>
+                    <th class="py-2 px-3">Name</th>
+                    <th class="py-2 px-3">Time</th>
+                    <th class="py-2 px-3">Team</th>
+                  </tr>
+                </thead>
+              </table>
+              <table class="scoreTable table is-striped is-fullwidth">
+                <thead>
+                  <tr>
+                    <!-- <th>Placement</th> -->
+                    <th>Team</th>
+                    <th>Score</th>
+                  </tr>
+                </thead>
+              </table>
             </div>
           </div>
         </div>
-        <br>
-        <br>
-        <div id="resultsDiv">
-          <div id="boys">
-            <table class="placementTable table is-striped is-fullwidth is-narrow">
-              <thead>
-                <tr>
-                  <th class="py-2 px-3">Place</th>
-                  <th class="py-2 px-3">Grade</th>
-                  <th class="py-2 px-3">Name</th>
-                  <th class="py-2 px-3">Time</th>
-                  <th class="py-2 px-3">Team</th>
-                </tr>
-              </thead>
-            </table>
-            <table class="scoreTable table is-striped is-fullwidth">
-              <thead>
-                <tr>
-                  <th>Placement</th>
-                  <th>Team</th>
-                  <th>Score</th>
-                </tr>
-              </thead>
-            </table>
+      </div>
+      <div id="dualMeet" class="tabcontent" style="border-radius: 8px;">
+        <h1 class="p-3 subtitle has-text-black">Dual Meet Simulator</h1>
+        <p class="p-3 has-text-black">
+          This page simulates a dual meet between two teams. (The team on the
+          current website, and the team provided)
+        </p>
+        <!-- Create a textbox using bulma for the opposing team's id -->
+        <div class="container box ">
+          <div class="columns">
+            <div class="column">
+              <form id="teamsInput">
+                <div id="dualMeetTeams">
+                  <div class="field has-addons">
+                    <div class="control">
+                      <input id="dualMeetFirstTeam" type="text" class="input" name="teamId">
+                    </div>
+                    <!-- Suggestions -->
+                    <div class="control">
+                      <input id="dualMeetFirstTeamAutocomplete" type="text" class="input" placeholder="Search for a team">
+                      <div class="dropdown-content"></div>
+                    </div>
+                    <!-- End of Suggestions -->
+                  </div>
+                  <div class="field has-addons">
+                    <div class="control">
+                      <input id="dualMeetSecondTeam" type="text" class="input" name="teamId">
+                    </div>
+                    <!-- Suggestions -->
+                    <div class="control">
+                      <input id="dualMeetSecondTeamAutocomplete" type="text" class="input" placeholder="Search for a team">
+                      <div class="dropdown-content"></div>
+                    </div>
+                    <!-- End of Suggestions -->
+                  </div>
+                </div>
+
+                <input id="dualMeetYear" type="number" min="2000" max="2099" step="1" value="2025" class="input is-primary mt-3" style="width: 25%" />
+
+                <div class="container mt-3">
+                  <button type="submit" id="dualMeetSimulateButton" class="button is-primary">Simulate</button>
+                </div>
+              </form>
+            </div>
+            <div class="column">
+              <div class="container">
+                <div class="container box">
+                  <h4 class="title is-4 is-text-white">Analysis</h4>
+                  <p>To be implemented...</p>
+                </div>
+              </div>
+            </div>
           </div>
-          <div id="girls">
-            <table class="placementTable table is-striped is-fullwidth py-2 px-3">
-              <thead>
-                <tr>
-                  <th class="py-2 px-3">Place</th>
-                  <th class="py-2 px-3">Grade</th>
-                  <th class="py-2 px-3">Name</th>
-                  <th class="py-2 px-3">Time</th>
-                  <th class="py-2 px-3">Team</th>
-                </tr>
-              </thead>
-            </table>
-            <table class="scoreTable table is-striped is-fullwidth">
-              <thead>
-                <tr>
-                  <th>Placement</th>
-                  <th>Team</th>
-                  <th>Score</th>
-                </tr>
-              </thead>
-            </table>
+          <br>
+          <br>
+          <div id="resultsDiv">
+            <div id="boys">
+              <h4 class="title is-4">Boys</h4>
+
+              <table class="placementTable table is-striped is-fullwidth is-narrow">
+                <thead>
+                  <tr>
+                    <th class="py-2 px-3">Place</th>
+                    <th class="py-2 px-3">Grade</th>
+                    <th class="py-2 px-3">Name</th>
+                    <th class="py-2 px-3">Time</th>
+                    <th class="py-2 px-3">Team</th>
+                  </tr>
+                </thead>
+              </table>
+              <table class="scoreTable table is-striped is-fullwidth">
+                <thead>
+                  <tr>
+                    <th>Placement</th>
+                    <th>Team</th>
+                    <th>Score</th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+            <br>
+            <div id="girls">
+              <h4 class="title is-4">Girls</h4>
+
+              <table class="placementTable table is-striped is-fullwidth py-2 px-3">
+                <thead>
+                  <tr>
+                    <th class="py-2 px-3">Place</th>
+                    <th class="py-2 px-3">Grade</th>
+                    <th class="py-2 px-3">Name</th>
+                    <th class="py-2 px-3">Time</th>
+                    <th class="py-2 px-3">Team</th>
+                  </tr>
+                </thead>
+              </table>
+              <table class="scoreTable table is-striped is-fullwidth">
+                <thead>
+                  <tr>
+                    <th>Placement</th>
+                    <th>Team</th>
+                    <th>Score</th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <script src="script.js"></script>
-    <script src="../../../build/bundle.js"></script>
+      <script src="script.js"></script>
+      <script src="../../../build/bundle.js"></script>
+    </section>
   </div>
 </body>
 

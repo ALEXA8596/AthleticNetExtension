@@ -524,10 +524,9 @@ async function updateResults(results, dual) {
     if (gender == "girls") genderAbbr = "F";
     const genderResults = placementResults[genderAbbr];
     const table = resultsDiv.querySelector(`#${gender} .placementTable`);
-    // Clear table contents except for the header row
-    while (table.rows.length > 0) {
-      table.deleteRow(1);
-    }
+    // Clear table contents except for the header row 
+    const rows = table.querySelectorAll('tr:not(:first-child)');
+    rows.forEach(row => row.remove());
     Object.values(genderResults).forEach((event, i) => {
       const eventTitle = document.createElement("h1");
       eventTitle.textContent = event[0].Event;
