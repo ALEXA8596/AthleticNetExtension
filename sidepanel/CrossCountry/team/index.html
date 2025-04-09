@@ -13,98 +13,100 @@
 
 <body>
   <div class="container">
-    <h1 class="p-3 title">Cross Country Meet Simulator</h1>
-    <p class="p-3">
-      This page simulates a dual meet between two teams. (The team on the
-      current website, and the team provided)
-    </p>
-    <!-- Create a textbox using bulma for the opposing team's id -->
-    <div class="container box">
-      <form id="teamsInput">
-        <div id="listOfIDs">
-          <div class="column">
-            <div class="field has-addons">
-              <div class="control">
-                <button class="button is-danger" id="DeleteRow" type="button">
-                  <i class="bi bi-trash"></i>
-                  Delete
-                </button>
+    <section class="section">
+      <h1 class="my-3 title pageTitle">Cross Country Meet Simulator</h1>
+      <p class="my-3 description">
+        This page simulates a dual meet between two teams. (The team on the
+        current website, and the team provided)
+      </p>
+      <!-- Create a textbox using bulma for the opposing team's id -->
+      <div class="container box py-3">
+        <form id="teamsInput">
+          <div id="listOfIDs">
+            <div class="column px-0">
+              <div class="field has-addons">
+                <div class="control">
+                  <button class="button is-danger" id="DeleteRow" type="button">
+                    <i class="bi bi-trash"></i>
+                    Delete
+                  </button>
+                </div>
+                <div class="control">
+                  <input id="firstTeam" type="text" class="input" name="teamId">
+                </div>
+                <!-- Suggestions -->
+                <div class="control">
+                  <input id="autocompleteInput" type="text" class="input" placeholder="Search for a team">
+                  <div id="autocompleteSuggestions" class="dropdown-content"></div>
+                </div>
+                <!-- End of Suggestions -->
               </div>
-              <div class="control">
-                <input id="firstTeam" type="text" class="input" name="teamId">
-              </div>
-              <!-- Suggestions -->
-              <div class="control">
-                <input id="autocompleteInput" type="text" class="input" placeholder="Search for a team">
-                <div id="autocompleteSuggestions" class="dropdown-content"></div>
-              </div>
-              <!-- End of Suggestions -->
             </div>
           </div>
-        </div>
 
-        <button id="rowAdder" type="button" class="button is-dark">
-          <span class="bi bi-plus-square-dotted"></span> Add Team
-        </button>
-        <div class="container mt-3">
-          <button type="submit" id="simulateButton" class="button is-primary">Simulate</button>
-          <div class="select">
-            <select id="distance">
-              
-            </select>
+          <button id="rowAdder" type="button" class="button is-dark">
+            <span class="bi bi-plus-square-dotted"></span> Add Team
+          </button>
+          <div class="container mt-3">
+            <button type="submit" id="simulateButton" class="button is-primary">Simulate</button>
+            <div class="select">
+              <select id="distance">
+
+              </select>
+            </div>
+          </div>
+        </form>
+
+        <br>
+        <div id="resultsDiv">
+          <div id="boys">
+            <table class="placementTable table is-striped is-fullwidth">
+              <thead>
+                <tr>
+                  <th>Place</th>
+                  <th>Grade</th>
+                  <th>Name</th>
+                  <th>Time</th>
+                  <th>Team</th>
+                </tr>
+              </thead>
+            </table>
+            <table class="scoreTable table is-striped is-fullwidth">
+              <thead>
+                <tr>
+                  <th>Placement</th>
+                  <th>Team</th>
+                  <th>Score</th>
+                </tr>
+              </thead>
+            </table>
+          </div>
+          <br>
+          <div id="girls">
+            <table class="placementTable table is-striped is-fullwidth">
+              <thead>
+                <tr>
+                  <th>Place</th>
+                  <th>Grade</th>
+                  <th>Name</th>
+                  <th>Time</th>
+                  <th>Team</th>
+                </tr>
+              </thead>
+            </table>
+            <table class="scoreTable table is-striped is-fullwidth">
+              <thead>
+                <tr>
+                  <th>Placement</th>
+                  <th>Team</th>
+                  <th>Score</th>
+                </tr>
+              </thead>
+            </table>
           </div>
         </div>
-      </form>
-
-      <br>
-      <div id="resultsDiv">
-        <div id="boys">
-          <table class="placementTable table is-striped is-fullwidth">
-            <thead>
-              <tr>
-                <th>Place</th>
-                <th>Grade</th>
-                <th>Name</th>
-                <th>Time</th>
-                <th>Team</th>
-              </tr>
-            </thead>
-          </table>
-          <table class="scoreTable table is-striped is-fullwidth">
-            <thead>
-              <tr>
-                <th>Placement</th>
-                <th>Team</th>
-                <th>Score</th>
-              </tr>
-            </thead>
-          </table>
-        </div>
-        <div id="girls">
-          <table class="placementTable table is-striped is-fullwidth">
-            <thead>
-              <tr>
-                <th>Place</th>
-                <th>Grade</th>
-                <th>Name</th>
-                <th>Time</th>
-                <th>Team</th>
-              </tr>
-            </thead>
-          </table>
-          <table class="scoreTable table is-striped is-fullwidth">
-            <thead>
-              <tr>
-                <th>Placement</th>
-                <th>Team</th>
-                <th>Score</th>
-              </tr>
-            </thead>
-          </table>
-        </div>
       </div>
-    </div>
-
+    </section>
     <script src="script.js"></script>
     <script src="../../../build/bundle.js"></script>
   </div>

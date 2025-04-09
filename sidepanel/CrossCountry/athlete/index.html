@@ -6,24 +6,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Athletic Helper</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
   <div class="container">
     <section class="section">
-      <div class="container">
-        <h1 class="title">Athlete Page</h1>
-        <button id='getUrlButton' class="button is-primary">Get URL</button>
-        <p id="current-tab-url" class="content"></p>
+        <h1 class="title pageTitle">Athlete Page</h1>
+        <button id='getUrlButton' class="button is-primary my-2">Load Athlete Performances</button>
+        
+        <!-- <p id="current-tab-url" class="content"></p> -->
+        
         <!-- DropDown Selector of Events -->
-        <div class="select is-fullwidth">
+        <div class="select my-2">
           <select name="distance" id="distanceDropDown" disabled="true">
           </select>
         </div>
-        <div class="box">
+        <div class="box my-2">
           <canvas id="myChart" width="400" height="400"></canvas>
         </div>
-      </div>
     </section>
   </div>
   <script src="../../../build/bundle.js"></script>

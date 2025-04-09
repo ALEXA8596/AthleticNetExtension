@@ -107,19 +107,18 @@
 }
 
 
-.container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-}
-
-.welcomeMessage {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 400;
-  font-style: normal;
-}
-
-body {
+html {
   background-color: lightblue;
+}
+
+.description {
+  color: black;
+}
+
+.pageTitle {
+  color: black;
+}
+
+.box {
+  background-color: rgb(70, 70, 70);
 }

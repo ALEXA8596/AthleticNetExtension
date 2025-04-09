@@ -138,5 +138,21 @@
   opacity: 1;
 }
 
-#nonDualMeet {background-color: lightblue;}
+#nonDualMeet {background-color: lightcoral;}
 #dualMeet {background-color: lightgreen;}
+
+html {
+  background-color: lightblue;
+}
+
+.description {
+  color: black;
+}
+
+.pageTitle {
+  color: black;
+}
+
+.box {
+  background-color: rgb(70, 70, 70);
+}

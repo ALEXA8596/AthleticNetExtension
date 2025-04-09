@@ -54,7 +54,7 @@ document
 
     lines.forEach((line, i) => {
       const newRowAdd = `
-            <div class="column">
+            <div class="column px-0">
                 <div class="field has-addons">
                     <div class="control">
                         <button class="button is-danger" id="DeleteRow" type="button">
@@ -482,6 +482,37 @@ async function simulateMeet(teamIds, teamsData, dual) {
   }
 }
 
+async function analyzeResults(results) {
+  const placementResults = results.results;
+
+  // const boysRecords = {
+  //   //https://en.wikipedia.org/wiki/List_of_United_States_high_school_national_records_in_track_and_field
+  //   // High school meet only records
+  //   "100 Meters": 10.05,
+  //   "200 Meters": 19.97,
+  //   "400 Meters":	45.19,
+  //   "800 Meters": 106.45,
+  //   "1600 Meters": 237.08,
+  //   "3200 Meters": 454.10,
+  //   "110m Hurdles": 13.30,
+  //   "300m Hurdles": 34.83,
+  //   // in meters
+  //   "High Jump": 2.28,
+  //   "Pole Vault": 5.93,
+  //   "Long Jump": 8.04,
+  //   "Triple Jump": 16.11,
+  //   "Shot Put": 23.46,
+  //   "Discus": 61.38"
+  //   "4x100 Relay": 39.76,
+  //   "4x400 Relay": 3:07.40,
+  // };
+    
+  // }
+
+  // analyze the results of each event by going through each and comparing the 2nd, 3rd, 4th, and 5th runners to the first runner
+  // formula: (1st place time - 2nd place time) / 1st place time * 100
+}
+
 async function updateResults(results, dual) {
   const placementResults = results.results;
   const resultsDiv = dual
@@ -570,7 +601,7 @@ function fieldEventDistanceToFTIN(distance) {
 document
   .getElementsByName("nonDualMeetButton")[0]
   .addEventListener("click", async function () {
-    openPage("nonDualMeet", this, "lightblue");
+    openPage("nonDualMeet", this, "lightcoral");
   });
 
 document
@@ -581,7 +612,7 @@ document
 
 $("#rowAdder").click(function () {
   const newRowAdd = `
-        <div class="column">
+        <div class="column px-0">
             <div class="field has-addons">
                 <div class="control">
                     <button class="button is-danger" id="DeleteRow" type="button">

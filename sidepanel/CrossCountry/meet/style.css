@@ -106,20 +106,18 @@
   font-style: italic;
 }
 
-
-.container {
-    display: flex;
-    align-items: center; /* Vertically centers the content */
-    justify-content: center; /* Horizontally centers the content (optional) */
-    height: 100vh; /* Full viewport height to demonstrate vertical centering */
-}
-
-.welcomeMessage {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 400;
-  font-style: normal;
-}
-
-body {
+html {
   background-color: lightblue;
+}
+
+.pageTitle {
+  color: black;
+}
+
+.box {
+  background-color: rgb(70, 70, 70);
+}
+
+.description {
+  color: black;
 }

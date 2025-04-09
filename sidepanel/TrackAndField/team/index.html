@@ -14,18 +14,18 @@
 <body>
   <div class="container">
     <h1 class="p-3 title">Track And Field Meet Simulator</h1>
-    <button name="nonDualMeetButton" id="defaultOpen" class="tablink">Invitational / Non-Dual Meet</button>
-    <button name="dualMeetButton" class="tablink">Dual Meet</button>
-    <div id="nonDualMeet" class="tabcontent">
+    <button name="nonDualMeetButton" id="defaultOpen" class="tablink" style="border-top-left-radius: 8px;">Invitational / Non-Dual Meet</button>
+    <button name="dualMeetButton" class="tablink" style="border-top-right-radius: 8px;">Dual Meet</button>
+    <div id="nonDualMeet" class="tabcontent" class="tablink" style="border-radius: 8px;">
       <h1 class="p-3 subtitle has-text-black">Non - Dual Meet / Invitational / Sectional / League / State Meet Simulator</h1>
       <p class="p-3 has-text-black">
         This page simulates an invitational or multi-team meet between two or more teams.
       </p>
       <div class="container box">
         <form id="teamsInputNonDualMeet">
-          <div id="listOfIDs">
-            <div class="column">
-              <div class="field has-addons">
+          <div id="listOfIDs" class="px-0">
+            <div class="column px-0">
+              <div class="field has-addons ">
                 <div class="control">
                   <button class="button is-danger" id="DeleteRow" type="button">
                     <i class="bi bi-trash"></i>
@@ -45,12 +45,14 @@
             </div>
           </div>
 
-          <!-- Add Year Picker -->
-          <input id="nonDualMeetYear" type="number" min="2000" max="2099" step="1" value="2025" class="input is-primary" />
-
           <button id="rowAdder" type="button" class="button is-dark">
             <span class="bi bi-plus-square-dotted"></span> Add Team
           </button>
+          <br>
+          <!-- Add Year Picker -->
+          <input id="nonDualMeetYear" type="number" min="2000" max="2099" step="1" value="2025" class="input is-primary mt-3" style="width: 25%" />
+
+
           <div class="container mt-3">
             <button type="submit" id="simulateButton" class="button is-primary">Simulate</button>
           </div>
@@ -109,14 +111,14 @@
         </div>
       </div>
     </div>
-    <div id="dualMeet" class="tabcontent">
+    <div id="dualMeet" class="tabcontent" style="border-radius: 8px;">
       <h1 class="p-3 subtitle has-text-black">Dual Meet Simulator</h1>
       <p class="p-3 has-text-black">
         This page simulates a dual meet between two teams. (The team on the
         current website, and the team provided)
       </p>
       <!-- Create a textbox using bulma for the opposing team's id -->
-      <div class="container box m-3">
+      <div class="container box ">
         <div class="columns">
           <div class="column">
             <form id="teamsInput">
@@ -145,7 +147,7 @@
                 </div>
               </div>
 
-              <input id="dualMeetYear" type="number" min="2000" max="2099" step="1" value="2025" class="input is-primary" />
+              <input id="dualMeetYear" type="number" min="2000" max="2099" step="1" value="2025" class="input is-primary mt-3" style="width: 25%"/>
 
               <div class="container mt-3">
                 <button type="submit" id="dualMeetSimulateButton" class="button is-primary">Simulate</button>
@@ -154,7 +156,7 @@
           </div>
           <div class="column">
             <div class="container">
-              <div class="container box m-3 px-6">
+              <div class="container box">
                 <h4 class="title is-4 is-text-white">Analysis</h4>
               </div>
             </div>

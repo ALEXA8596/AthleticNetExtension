@@ -116,3 +116,19 @@
 td {
   padding: 0 15px;
 }
+
+html {
+  background-color: lightblue;
+}
+
+.pageTitle {
+  color: black;
+}
+
+.box {
+  background-color: rgb(70, 70, 70);
+}
+
+.description {
+  color: black;
+}

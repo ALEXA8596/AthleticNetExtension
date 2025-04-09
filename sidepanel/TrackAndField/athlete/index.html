@@ -6,23 +6,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Athletic Helper</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
   <div class="container">
-    <h1 class="p-3 title">Event Progression</h1>
-    <div class="select m-3">
-      <select name="event" id="eventDropDown" disabled="true">
-      </select>
-    </div>
-    <div class="columns">
-      <div class="column">
-        <div style="width: 100%; height: 400px;">
-        <canvas id="myChart" style="width: 100%; height: 100%;"></canvas>
+    <section class="section">
+      <h1 class="title pageTitle">Event Progression</h1>
+      <div class="select m-3">
+        <select name="event" id="eventDropDown" disabled="true">
+        </select>
+      </div>
+      <div class="columns">
+        <div class="column">
+          <div style="width: 100%; height: 400px;">
+            <canvas class="box" id="myChart" style="width: 100%; height: 100%;"></canvas>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   </div>
+
   <script src="script.js"></script>
   <script src="../../../public/luxon.min.js"></script>
   <script src="../../../public/chart.min.js"></script>
