@@ -141,14 +141,33 @@ function buttonClick() {
                                                 let inches = value % 12;
                                                 return feet + "'" + inches + '"';
                                             }
-                                            let minutes = Math.floor(value / 60000);
-                                            let seconds = ((value % 60000) / 1000).toFixed(0);
-                                            let milliseconds = value % 1000;
-                                            return minutes + ":" + (seconds < 10 ? '0' : '') + seconds + ":" + milliseconds;
+                                            let totalSeconds = value / 1000;
+                                            let minutes = Math.floor(totalSeconds / 60);
+                                            let seconds = Math.floor(totalSeconds % 60);
+                                            let milliseconds = Math.floor((totalSeconds % 1) * 1000);
+                                            return minutes + ":" + (seconds < 10 ? '0' : '') + seconds + "." + milliseconds;
                                         }
                                     }
-                                },
-
+                                }
+                            },
+                            plugins: {
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (tooltipItem) {
+                                            if (event.Type === "F") {
+                                                // convert the value (in inches) to feet and inches
+                                                let feet = Math.floor(tooltipItem.parsed.y / 12);
+                                                let inches = tooltipItem.parsed.y % 12;
+                                                return feet + "'" + inches + '"';
+                                            }
+                                            let totalSeconds = tooltipItem.parsed.y / 1000;
+                                            let minutes = Math.floor(totalSeconds / 60);
+                                            let seconds = Math.floor(totalSeconds % 60);
+                                            let milliseconds = Math.floor((totalSeconds % 1) * 1000);
+                                            return minutes + ":" + (seconds < 10 ? '0' : '') + seconds + "." + milliseconds;
+                                        }
+                                    }
+                                }
                             },
                             backgroundColor: 'white'
                         },
