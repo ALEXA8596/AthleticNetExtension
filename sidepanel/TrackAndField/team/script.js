@@ -587,7 +587,7 @@ function timeInMillisecondsToSecondsOrMMSS(time) {
   const seconds = Math.floor(time % 60);
   const milliseconds = (Math.floor((time - Math.floor(time)) * 1000) + '').padStart(3, '0');
   if (minutes == 0) return `${seconds}.${milliseconds}`;
-  return `${minutes}:${seconds.padStart(2, "0")}.${milliseconds}`;
+  return `${minutes}:${seconds.toString().padStart(2, "0")}.${milliseconds}`;
 }
 
 function fieldEventDistanceToFTIN(distance) {
