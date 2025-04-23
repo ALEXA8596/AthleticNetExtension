@@ -156,3 +156,59 @@ html {
 .box {
   background-color: rgb(70, 70, 70);
 }
+
+.team-tag-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    min-height: 2rem;
+}
+
+.team-tag {
+    display: inline-flex;
+    align-items: center;
+    background: #f0f0f0;
+    padding: 0.3rem 0.8rem;
+    border-radius: 1rem;
+    margin-right: 0.5rem;
+}
+
+.team-tag .delete-tag {
+    margin-left: 0.5rem;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: #666;
+}
+
+.team-tag .delete-tag:hover {
+    color: #ff0000;
+}
+
+.suggestions-box {
+    position: absolute;
+    width: 100%;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 100;
+    margin-top: 2px;
+}
+
+.suggestion-item {
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+.suggestion-item:hover {
+    background: #f5f5f5;
+}
+
+/* Add table header styling */
+.table thead th {
+    background-color: transparent !important;
+    color: white !important;
+}

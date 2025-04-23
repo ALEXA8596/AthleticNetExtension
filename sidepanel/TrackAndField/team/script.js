@@ -137,6 +137,19 @@ document
  * @returns
  */
 async function simulateMeet(teamIds, teamsData, dual) {
+  // Get selected grades
+  const selectedGrades = Array.from(
+    document.querySelectorAll(".grade-filter:checked")
+  ).map((cb) => cb.value);
+
+  // Helper function to filter athlete by grade
+  const isAthleteGradeSelected = (athlete) => {
+    // If no grades are selected, include all athletes
+    if (selectedGrades.length === 0) return true;
+    // Include athlete if their grade is selected
+    return selectedGrades.includes(athlete.GradeID?.toString());
+  };
+
   if (dual == true) {
     const homeTeamId = teamIds[0];
     const opposingTeamId = teamIds[1];
@@ -152,21 +165,25 @@ async function simulateMeet(teamIds, teamsData, dual) {
       M: {},
       F: {},
     };
+    // Filter athletes by grade when adding them to events
     homeTeamEventRecords.forEach((record) => {
       if (!events[record.Gender][record.Event]) {
         events[record.Gender][record.Event] = [];
       }
-      // add school id to the record
-      record.SchoolID = homeTeamId;
-      events[record.Gender][record.Event].push(record);
+      if (isAthleteGradeSelected(record)) {
+        record.SchoolID = homeTeamId;
+        events[record.Gender][record.Event].push(record);
+      }
     });
 
     opposingTeamEventRecords.forEach((record) => {
       if (!events[record.Gender][record.Event]) {
         events[record.Gender][record.Event] = [];
       }
-      record.SchoolID = opposingTeamId;
-      events[record.Gender][record.Event].push(record);
+      if (isAthleteGradeSelected(record)) {
+        record.SchoolID = opposingTeamId;
+        events[record.Gender][record.Event].push(record);
+      }
     });
 
     for (const gender in events) {
@@ -178,10 +195,18 @@ async function simulateMeet(teamIds, teamsData, dual) {
     // slice the arrays to only include the top 10
     for (const gender in events) {
       for (const event in events[gender]) {
-        events[gender][event] = events[gender][event].slice(0, 10);
+        events[gender][event] = events[gender][event].slice(0, 5);
       }
     }
 
+    // Get selected grades
+    const selectedGrades = Array.from(
+      document.querySelectorAll(".grade-filter:checked")
+    ).map((cb) => cb.value);
+    const onlyFreshmenSophomores =
+      selectedGrades.length > 0 &&
+      selectedGrades.every((grade) => ["9", "10"].includes(grade));
+    console.log(onlyFreshmenSophomores);
     const maleCountedEvents = [
       "100 Meters",
       "200 Meters",
@@ -189,7 +214,7 @@ async function simulateMeet(teamIds, teamsData, dual) {
       "800 Meters",
       "1600 Meters",
       "3200 Meters",
-      "110m Hurdles",
+      onlyFreshmenSophomores ? "65m Hurdles" : "110m Hurdles",
       "300m Hurdles",
       "4x100 Relay",
       "4x400 Relay",
@@ -331,8 +356,8 @@ async function simulateMeet(teamIds, teamsData, dual) {
 
     return {
       teamNames: {
-      [homeTeamId]: homeTeamName,
-      [opposingTeamId]: opposingTeamName,
+        [homeTeamId]: homeTeamName,
+        [opposingTeamId]: opposingTeamName,
       },
       points,
       results: events,
@@ -351,10 +376,10 @@ async function simulateMeet(teamIds, teamsData, dual) {
         if (!events[record.Gender][record.Event]) {
           events[record.Gender][record.Event] = [];
         }
-        // add school id to the record
-        record.SchoolID = school;
-
-        events[record.Gender][record.Event].push(record);
+        if (isAthleteGradeSelected(record)) {
+          record.SchoolID = school;
+          events[record.Gender][record.Event].push(record);
+        }
       });
     });
 
@@ -506,7 +531,7 @@ async function analyzeResults(results) {
   //   "4x100 Relay": 39.76,
   //   "4x400 Relay": 3:07.40,
   // };
-    
+
   // }
 
   // analyze the results of each event by going through each and comparing the 2nd, 3rd, 4th, and 5th runners to the first runner
@@ -524,22 +549,53 @@ async function updateResults(results, dual) {
     if (gender == "girls") genderAbbr = "F";
     const genderResults = placementResults[genderAbbr];
     const table = resultsDiv.querySelector(`#${gender} .placementTable`);
-    // Clear table contents except for the header row 
-    const rows = table.querySelectorAll('tr:not(:first-child)');
-    rows.forEach(row => row.remove());
-    Object.values(genderResults).forEach((event, i) => {
-      const eventTitle = document.createElement("h1");
-      eventTitle.textContent = event[0].Event;
-      table.appendChild(eventTitle);
 
-      event.forEach((record, j) => {
-        const row = document.createElement("tr");
-        row.dataset.eventName = event[0].Event;
-        row.dataset.gender = genderAbbr;
-        row.dataset.athleteId = `${record.SchoolID}-${record.FirstName}-${record.LastName}-${record.Event}`;
-        row.innerHTML = `
+    // Clear table contents
+    table.innerHTML = `
+      <thead>
+        <tr>
+          <th colspan="6" class="has-background-info has-text-white py-3 is-size-4">${
+            gender.charAt(0).toUpperCase() + gender.slice(1)
+          }</th>
+        </tr>
+        <tr>
+          <th class="py-2 px-3">Place</th>
+          <th class="py-2 px-3">Grade</th>
+          <th class="py-2 px-3">Name</th>
+          <th class="py-2 px-3">Time</th>
+          <th class="py-2 px-3">Team</th>
+          <th class="py-2 px-3 print-hide">Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    `;
+
+    const tbody = table.querySelector("tbody");
+
+    Object.values(genderResults).forEach((event, i) => {
+      // Add event header row
+      // Skip if event is empty
+      if (event[0]) {
+        const headerRow = document.createElement("tr");
+        headerRow.className = "event-header";
+        headerRow.innerHTML = `
+        <td colspan="6" class="has-background-light has-text-weight-bold py-2">
+          ${event[0].Event}
+        </td>
+      `;
+        tbody.appendChild(headerRow);
+
+        // Add event results
+        event.forEach((record, j) => {
+          const row = document.createElement("tr");
+          row.dataset.eventName = event[0].Event;
+          row.dataset.gender = genderAbbr;
+          row.dataset.athleteId = `${record.SchoolID}-${record.FirstName}-${record.LastName}-${record.Event}`;
+          row.innerHTML = `
           <td class="py-1 px-1" style="font-size: 10px;">${j + 1}</td>
-          <td class="py-1 px-1" style="font-size: 10px;">${record.GradeID ? record.GradeID : ""}</td>
+          <td class="py-1 px-1" style="font-size: 10px;">${
+            record.GradeID ? record.GradeID : ""
+          }</td>
           <td class="py-1 px-1" style="font-size: 10px;">${
             record.FirstName + " " + (record.LastName ? record.LastName : "")
           }</td>
@@ -548,59 +604,72 @@ async function updateResults(results, dual) {
               ? timeInMillisecondsToSecondsOrMMSS(record.SortInt)
               : fieldEventDistanceToFTIN(record.SortInt)
           }</td>
-          <td class="py-1 px-1" style="font-size: 10px;">${results.teamNames[record.SchoolID] ? results.teamNames[record.SchoolID] : record.SchoolID}</td>
-          <td><button class="button is-danger is-small delete-performance">×</button></td>
+          <td class="py-1 px-1" style="font-size: 10px;">${
+            results.teamNames[record.SchoolID]
+              ? results.teamNames[record.SchoolID]
+              : record.SchoolID
+          }</td>
+          <td class="print-hide"><button class="button is-danger is-small delete-performance">×</button></td>
         `;
-        table.appendChild(row);
-      });
+          tbody.appendChild(row);
+        });
+      }
     });
   });
 
-  await Promise.all(["boys", "girls"].map(async (gender) => {
-    let genderAbbr = gender === "boys" ? "M" : "F";
-    results.points[genderAbbr] = Object.fromEntries(
-      Object.entries(results.points[genderAbbr]).sort((a, b) => b[1] - a[1])
-    );
-    const scoreTable = resultsDiv.querySelector(`#${gender} > .scoreTable`);
-    scoreTable.innerHTML = "";
-    
-    const teamEntries = await Promise.all(
-      Object.entries(results.points[genderAbbr]).map(async ([teamId, points]) => {
-        const teamScore = points !== 0 ? points : "DNP";
-        const teamData = await athleticWrapper.track.team.GetTeamCore(teamId);
-        return { teamName: teamData.team.Name, teamScore };
-      })
-    );
-    
-    teamEntries.forEach(({ teamName, teamScore }) => {
-      const teamRow = document.createElement("tr");
-      teamRow.innerHTML = `
+  await Promise.all(
+    ["boys", "girls"].map(async (gender) => {
+      let genderAbbr = gender === "boys" ? "M" : "F";
+      results.points[genderAbbr] = Object.fromEntries(
+        Object.entries(results.points[genderAbbr]).sort((a, b) => b[1] - a[1])
+      );
+      const scoreTable = resultsDiv.querySelector(`#${gender} > .scoreTable`);
+      scoreTable.innerHTML = "";
+
+      const teamEntries = await Promise.all(
+        Object.entries(results.points[genderAbbr]).map(
+          async ([teamId, points]) => {
+            const teamScore = points !== 0 ? points : "DNP";
+            const teamData = await athleticWrapper.track.team.GetTeamCore(
+              teamId
+            );
+            return { teamName: teamData.team.Name, teamScore };
+          }
+        )
+      );
+
+      teamEntries.forEach(({ teamName, teamScore }) => {
+        const teamRow = document.createElement("tr");
+        teamRow.innerHTML = `
                 <td>${teamName}</td>
                 <td>${teamScore}</td>
             `;
-      scoreTable.appendChild(teamRow);
-    });
-  }));
+        scoreTable.appendChild(teamRow);
+      });
+    })
+  );
 }
 
 // Add event listener for delete buttons
-document.addEventListener('click', async function(e) {
-  if (e.target.classList.contains('delete-performance')) {
-    const row = e.target.closest('tr');
+document.addEventListener("click", async function (e) {
+  if (e.target.classList.contains("delete-performance")) {
+    const row = e.target.closest("tr");
     const eventName = row.dataset.eventName;
     const gender = row.dataset.gender;
     const athleteId = row.dataset.athleteId;
-    
+
     // Remove the performance from the data structure
     const genderResults = results.results[gender];
     const event = genderResults[eventName];
-    const athleteIndex = event.findIndex(record => 
-      `${record.SchoolID}-${record.FirstName}-${record.LastName}-${record.Event}` === athleteId
+    const athleteIndex = event.findIndex(
+      (record) =>
+        `${record.SchoolID}-${record.FirstName}-${record.LastName}-${record.Event}` ===
+        athleteId
     );
-    
+
     if (athleteIndex > -1) {
       event.splice(athleteIndex, 1);
-      
+
       // Recalculate scores
       if (event.length > 0) {
         const isDual = Object.keys(results.teamNames).length === 2;
@@ -615,7 +684,9 @@ function timeInMillisecondsToSecondsOrMMSS(time) {
   time = time / 1000;
   const minutes = Math.floor(time / 60);
   const seconds = Math.floor(time % 60);
-  const milliseconds = (Math.floor((time - Math.floor(time)) * 1000) + '').padStart(3, '0');
+  const milliseconds = (
+    Math.floor((time - Math.floor(time)) * 1000) + ""
+  ).padStart(3, "0");
   if (minutes == 0) return `${seconds}.${milliseconds}`;
   return `${minutes}:${seconds.toString().padStart(2, "0")}.${milliseconds}`;
 }
@@ -639,43 +710,71 @@ document
     openPage("dualMeet", this, "lightgreen");
   });
 
-$("#rowAdder").click(function () {
-  const newRowAdd = `
-        <div class="column px-0">
-            <div class="field has-addons">
-                <div class="control">
-                    <button class="button is-danger" id="DeleteRow" type="button">
-                        <i class="bi bi-trash"></i>
-                        Delete
-                    </button>
-                </div>
-                <div class="control">
-                    <input type="text" class="input" name="teamId">
-                </div>
-                <div class="control">
-                    <input type="text" class="input autocompleteInput" placeholder="Search for a team">
-                    <div class="dropdown-content"></div>
-                </div>
-            </div>
-        </div>`;
-  $("#listOfIDs").append(newRowAdd);
+function initializeTagSystem(containerElement) {
+  const teamContainer = containerElement.querySelector(".team-tag-container");
+  const searchInput = containerElement.querySelector(".team-search");
+  const suggestionsBox = containerElement.querySelector(".suggestions-box");
+  const selectedTeams = new Map();
 
-  // Add autocomplete to the new input field
-  const newInput = $("#listOfIDs .column:last-child .autocompleteInput")[0];
-  addAutocomplete(newInput);
-});
+  function addTeamTag(teamId, teamName) {
+    if (selectedTeams.has(teamId)) return;
 
-function addAutocomplete(inputElement) {
-  inputElement.addEventListener("input", async function () {
-    const query = this.value;
-    if (query.length < 3) {
-      inputElement.nextElementSibling.innerHTML = "";
+    const tag = document.createElement("div");
+    tag.className = "team-tag";
+    tag.innerHTML = `
+            ${teamName}
+            <button type="button" class="delete-tag" data-team-id="${teamId}">×</button>
+            <input type="hidden" name="teamId" value="${teamId}">
+        `;
+
+    tag.querySelector(".delete-tag").addEventListener("click", () => {
+      selectedTeams.delete(teamId);
+      tag.remove();
+    });
+
+    teamContainer.appendChild(tag);
+    selectedTeams.set(teamId, teamName);
+    searchInput.value = "";
+  }
+
+  searchInput.addEventListener("input", async function () {
+    if (this.value.length < 3) {
+      suggestionsBox.innerHTML = "";
       return;
     }
-    const suggestions = await fetchTeamSuggestions(query);
-    displaySuggestions(suggestions, inputElement);
+
+    const suggestions = await fetchTeamSuggestions(this.value);
+    suggestionsBox.innerHTML = "";
+
+    suggestions.forEach((team) => {
+      if (!selectedTeams.has(team.id_db)) {
+        const div = document.createElement("div");
+        div.className = "suggestion-item";
+        div.textContent = team.textsuggest + ` (${team.subtext})`;
+        div.addEventListener("click", () => {
+          addTeamTag(team.id_db, team.textsuggest + ` (${team.subtext})`);
+          suggestionsBox.innerHTML = "";
+        });
+        suggestionsBox.appendChild(div);
+      }
+    });
+  });
+
+  // Close suggestions when clicking outside
+  document.addEventListener("click", function (e) {
+    if (!containerElement.contains(e.target)) {
+      suggestionsBox.innerHTML = "";
+    }
   });
 }
+
+// Initialize tag systems
+document.addEventListener("DOMContentLoaded", function () {
+  // For dual meet
+  initializeTagSystem(document.querySelector("#dualMeetTeams"));
+  // For non-dual meet
+  initializeTagSystem(document.querySelector("#listOfIDs"));
+});
 
 function displaySuggestions(suggestions, inputElement) {
   const suggestionsContainer = inputElement.nextElementSibling;
@@ -698,46 +797,97 @@ function displaySuggestions(suggestions, inputElement) {
 async function fetchTeamSuggestions(query) {
   // Replace with actual API call to fetch team suggestions
   const response = await window.athleticWrapper.search.AutoComplete(query);
+  console.log(response);
   return response.response.docs.filter((doc) => doc.type === "Team");
 }
 
-// Initialize autocomplete for the initial input fields
-addAutocomplete(document.getElementById("autocompleteInput"));
-addAutocomplete(document.getElementById("dualMeetFirstTeamAutocomplete"));
-addAutocomplete(document.getElementById("dualMeetSecondTeamAutocomplete"));
-
 function printResults(isDual) {
-    const resultsDiv = isDual ? "resultsDiv" : "nonDualMeetResultsDiv";
-    const printWindow = window.open('', '', 'height=600,width=800');
-    const styles = `
+  console.log(
+    "Printing results for " + (isDual ? "Dual Meet" : "Non-Dual Meet")
+  );
+  const resultsDiv = document.getElementById(
+    isDual ? "resultsDiv" : "nonDualMeetResultsDiv"
+  );
+  if (!resultsDiv) return;
+
+  const printWindow = window.open("", "_blank");
+  if (!printWindow) {
+    alert("Please allow pop-ups for printing");
+    return;
+  }
+
+  // Deep clone the results div
+  const contentClone = resultsDiv.cloneNode(true);
+
+  // Remove all delete buttons and extra columns
+  contentClone.querySelectorAll(".delete-performance").forEach((el) => {
+    el.closest("td").remove();
+  });
+
+  const styles = `
         <style>
+            body { font-family: Arial, sans-serif; padding: 20px; }
             table { width: 100%; border-collapse: collapse; margin-bottom: 1em; }
-            th, td { border: 1px solid black; padding: 8px; text-align: left; }
-            h1, h4 { margin: 1em 0; }
-            .delete-performance { display: none; }
+            th, td { 
+                border: 1px solid black; 
+                padding: 4px 6px;
+                text-align: left; 
+                font-size: 10px;
+                line-height: 1.2;
+            }
+            h4 { 
+                margin: 0.5em 0; 
+                font-size: 16px; 
+                font-weight: bold; 
+            }
+            .event-header td { 
+                background-color: #f5f5f5 !important; 
+                font-weight: bold;
+                font-size: 12px !important;
+                padding: 4px 6px;
+            }
+            .print-hide { display: none; }
+            @media print {
+                body { padding: 0; margin: 0; }
+                table { page-break-inside: avoid; }
+                h4 { page-break-before: always; margin-top: 1em; }
+                tr { page-break-inside: avoid; }
+                .event-header { background-color: #f5f5f5 !important; -webkit-print-color-adjust: exact; }
+            }
         </style>
     `;
-    
-    printWindow.document.write(`
+
+  printWindow.document.write(`
+        <!DOCTYPE html>
         <html>
             <head>
-                <title>Meet Results</title>
+                <title>Track Meet Results</title>
                 ${styles}
             </head>
             <body>
-                ${document.getElementById(resultsDiv).innerHTML}
+                ${contentClone.innerHTML}
             </body>
         </html>
     `);
-    
-    printWindow.document.close();
+
+  printWindow.document.close();
+
+  // Wait for content to load before printing
+  printWindow.onload = () => {
     printWindow.focus();
-    printWindow.print();
-    printWindow.close();
+    setTimeout(() => {
+      printWindow.print();
+      // Don't close the window immediately to allow for print dialog
+    }, 500);
+  };
 }
 
 // Add event listeners for print buttons
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('printDualMeet').addEventListener('click', () => printResults(true));
-    document.getElementById('printNonDualMeet').addEventListener('click', () => printResults(false));
+document.addEventListener("DOMContentLoaded", function () {
+  document
+    .getElementById("printDualMeet")
+    .addEventListener("click", () => printResults(true));
+  document
+    .getElementById("printNonDualMeet")
+    .addEventListener("click", () => printResults(false));
 });

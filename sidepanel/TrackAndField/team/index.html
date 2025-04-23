@@ -25,23 +25,11 @@
         <div class="container box">
           <form id="teamsInputNonDualMeet">
             <div id="listOfIDs" class="px-0">
-              <div class="column px-0">
-                <div class="field has-addons ">
-                  <div class="control">
-                    <button class="button is-danger" id="DeleteRow" type="button">
-                      <i class="bi bi-trash"></i>
-                      Delete
-                    </button>
-                  </div>
-                  <div class="control">
-                    <input id="firstTeam" type="text" class="input" name="teamId">
-                  </div>
-                  <!-- Suggestions -->
-                  <div class="control">
-                    <input id="autocompleteInput" type="text" class="input" placeholder="Search for a team">
-                    <div id="autocompleteSuggestions" class="dropdown-content"></div>
-                  </div>
-                  <!-- End of Suggestions -->
+              <div class="field">
+                <div class="team-tag-container"></div>
+                <div class="control">
+                  <input type="text" class="input team-search" placeholder="Search for teams...">
+                  <div class="suggestions-box"></div>
                 </div>
               </div>
             </div>
@@ -55,10 +43,27 @@
 
 
             <div class="container mt-3">
+              <div class="field">
+                <label class="label has-text-white">Grade Filters:</label>
+                <div class="control">
+                  <label class="checkbox has-text-white">
+                    <input type="checkbox" class="grade-filter" value="9"> 9th
+                  </label>
+                  <label class="checkbox has-text-white">
+                    <input type="checkbox" class="grade-filter" value="10"> 10th
+                  </label>
+                  <label class="checkbox has-text-white">
+                    <input type="checkbox" class="grade-filter" value="11"> 11th
+                  </label>
+                  <label class="checkbox has-text-white">
+                    <input type="checkbox" class="grade-filter" value="12"> 12th
+                  </label>
+                </div>
+              </div>
               <button type="submit" id="simulateButton" class="button is-primary">Simulate</button>
               <button type="button" id="printNonDualMeet" class="button is-info">
                 <span class="icon">
-                  🖨️
+                  <span>🖨️</span>
                 </span>
                 <span>Print Results</span>
               </button>
@@ -68,24 +73,12 @@
           <br>
           <div id="nonDualMeetResultsDiv">
             <div id="boys">
-              <h4 class="title is-4">Boys</h4>
-
               <table class="placementTable table is-striped is-fullwidth">
-                <thead>
-                  <tr>
-                    <th class="py-2 px-3">Place</th>
-                    <th class="py-2 px-3">Grade</th>
-                    <th class="py-2 px-3">Name</th>
-                    <th class="py-2 px-3">Time</th>
-                    <th class="py-2 px-3">Team</th>
-                  </tr>
-                </thead>
               </table>
 
               <table class="scoreTable table is-striped is-fullwidth">
                 <thead>
                   <tr>
-                    <!-- <th>Placement</th> -->
                     <th>Team</th>
                     <th>Score</th>
                   </tr>
@@ -94,22 +87,11 @@
             </div>
             <br>
             <div id="girls">
-              <h4 class="title is-4">Girls</h4>
               <table class="placementTable table is-striped is-fullwidth">
-                <thead>
-                  <tr>
-                    <th class="py-2 px-3">Place</th>
-                    <th class="py-2 px-3">Grade</th>
-                    <th class="py-2 px-3">Name</th>
-                    <th class="py-2 px-3">Time</th>
-                    <th class="py-2 px-3">Team</th>
-                  </tr>
-                </thead>
               </table>
               <table class="scoreTable table is-striped is-fullwidth">
                 <thead>
                   <tr>
-                    <!-- <th>Placement</th> -->
                     <th>Team</th>
                     <th>Score</th>
                   </tr>
@@ -131,37 +113,39 @@
             <div class="column">
               <form id="teamsInput">
                 <div id="dualMeetTeams">
-                  <div class="field has-addons">
+                  <div class="field">
+                    <div class="team-tag-container"></div>
                     <div class="control">
-                      <input id="dualMeetFirstTeam" type="text" class="input" name="teamId">
+                      <input type="text" class="input team-search" placeholder="Search for teams...">
+                      <div class="suggestions-box"></div>
                     </div>
-                    <!-- Suggestions -->
-                    <div class="control">
-                      <input id="dualMeetFirstTeamAutocomplete" type="text" class="input" placeholder="Search for a team">
-                      <div class="dropdown-content"></div>
-                    </div>
-                    <!-- End of Suggestions -->
-                  </div>
-                  <div class="field has-addons">
-                    <div class="control">
-                      <input id="dualMeetSecondTeam" type="text" class="input" name="teamId">
-                    </div>
-                    <!-- Suggestions -->
-                    <div class="control">
-                      <input id="dualMeetSecondTeamAutocomplete" type="text" class="input" placeholder="Search for a team">
-                      <div class="dropdown-content"></div>
-                    </div>
-                    <!-- End of Suggestions -->
                   </div>
                 </div>
 
                 <input id="dualMeetYear" type="number" min="2000" max="2099" step="1" value="2025" class="input is-primary mt-3" style="width: 25%" />
 
                 <div class="container mt-3">
+                  <div class="field">
+                    <label class="label has-text-white">Grade Filters:</label>
+                    <div class="control">
+                      <label class="checkbox has-text-white">
+                        <input type="checkbox" class="grade-filter" value="9"> 9th
+                      </label>
+                      <label class="checkbox has-text-white">
+                        <input type="checkbox" class="grade-filter" value="10"> 10th
+                      </label>
+                      <label class="checkbox has-text-white">
+                        <input type="checkbox" class="grade-filter" value="11"> 11th
+                      </label>
+                      <label class="checkbox has-text-white">
+                        <input type="checkbox" class="grade-filter" value="12"> 12th
+                      </label>
+                    </div>
+                  </div>
                   <button type="submit" id="dualMeetSimulateButton" class="button is-primary">Simulate</button>
                   <button type="button" id="printDualMeet" class="button is-info">
                     <span class="icon">
-                      <i class="bi bi-printer"></i>
+                      <span>🖨️</span>
                     </span>
                     <span>Print Results</span>
                   </button>
@@ -181,23 +165,11 @@
           <br>
           <div id="resultsDiv">
             <div id="boys">
-              <h4 class="title is-4">Boys</h4>
-
               <table class="placementTable table is-striped is-fullwidth is-narrow">
-                <thead>
-                  <tr>
-                    <th class="py-2 px-3">Place</th>
-                    <th class="py-2 px-3">Grade</th>
-                    <th class="py-2 px-3">Name</th>
-                    <th class="py-2 px-3">Time</th>
-                    <th class="py-2 px-3">Team</th>
-                  </tr>
-                </thead>
               </table>
               <table class="scoreTable table is-striped is-fullwidth">
                 <thead>
                   <tr>
-                    <th>Placement</th>
                     <th>Team</th>
                     <th>Score</th>
                   </tr>
@@ -206,23 +178,11 @@
             </div>
             <br>
             <div id="girls">
-              <h4 class="title is-4">Girls</h4>
-
               <table class="placementTable table is-striped is-fullwidth py-2 px-3">
-                <thead>
-                  <tr>
-                    <th class="py-2 px-3">Place</th>
-                    <th class="py-2 px-3">Grade</th>
-                    <th class="py-2 px-3">Name</th>
-                    <th class="py-2 px-3">Time</th>
-                    <th class="py-2 px-3">Team</th>
-                  </tr>
-                </thead>
               </table>
               <table class="scoreTable table is-striped is-fullwidth">
                 <thead>
                   <tr>
-                    <th>Placement</th>
                     <th>Team</th>
                     <th>Score</th>
                   </tr>
