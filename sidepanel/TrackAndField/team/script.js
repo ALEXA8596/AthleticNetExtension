@@ -534,21 +534,23 @@ async function updateResults(results, dual) {
 
       event.forEach((record, j) => {
         const row = document.createElement("tr");
+        row.dataset.eventName = event[0].Event;
+        row.dataset.gender = genderAbbr;
+        row.dataset.athleteId = `${record.SchoolID}-${record.FirstName}-${record.LastName}-${record.Event}`;
         row.innerHTML = `
-                <td class="py-1 px-1" style="font-size: 10px;">${j + 1}</td>
-                <td class="py-1 px-1" style="font-size: 10px;">${record.GradeID ? record.GradeID : ""}</td>
-                <td class="py-1 px-1" style="font-size: 10px;">${
-                  record.FirstName +
-                  " " +
-                  (record.LastName ? record.LastName : "")
-                }</td>
-                <td class="py-1 px-1" style="font-size: 10px;">${
-                  record.Type == "T"
-                    ? timeInMillisecondsToSecondsOrMMSS(record.SortInt)
-                    : fieldEventDistanceToFTIN(record.SortInt)
-                }</td>
-                <td class="py-1 px-1" style="font-size: 10px;">${results.teamNames[record.SchoolID] ? results.teamNames[record.SchoolID] : record.SchoolID}</td>
-            `;
+          <td class="py-1 px-1" style="font-size: 10px;">${j + 1}</td>
+          <td class="py-1 px-1" style="font-size: 10px;">${record.GradeID ? record.GradeID : ""}</td>
+          <td class="py-1 px-1" style="font-size: 10px;">${
+            record.FirstName + " " + (record.LastName ? record.LastName : "")
+          }</td>
+          <td class="py-1 px-1" style="font-size: 10px;">${
+            record.Type == "T"
+              ? timeInMillisecondsToSecondsOrMMSS(record.SortInt)
+              : fieldEventDistanceToFTIN(record.SortInt)
+          }</td>
+          <td class="py-1 px-1" style="font-size: 10px;">${results.teamNames[record.SchoolID] ? results.teamNames[record.SchoolID] : record.SchoolID}</td>
+          <td><button class="button is-danger is-small delete-performance">×</button></td>
+        `;
         table.appendChild(row);
       });
     });
@@ -580,6 +582,34 @@ async function updateResults(results, dual) {
     });
   }));
 }
+
+// Add event listener for delete buttons
+document.addEventListener('click', async function(e) {
+  if (e.target.classList.contains('delete-performance')) {
+    const row = e.target.closest('tr');
+    const eventName = row.dataset.eventName;
+    const gender = row.dataset.gender;
+    const athleteId = row.dataset.athleteId;
+    
+    // Remove the performance from the data structure
+    const genderResults = results.results[gender];
+    const event = genderResults[eventName];
+    const athleteIndex = event.findIndex(record => 
+      `${record.SchoolID}-${record.FirstName}-${record.LastName}-${record.Event}` === athleteId
+    );
+    
+    if (athleteIndex > -1) {
+      event.splice(athleteIndex, 1);
+      
+      // Recalculate scores
+      if (event.length > 0) {
+        const isDual = Object.keys(results.teamNames).length === 2;
+        results = await simulateMeet(Object.keys(teamsData), teamsData, isDual);
+        await updateResults(results, isDual);
+      }
+    }
+  }
+});
 
 function timeInMillisecondsToSecondsOrMMSS(time) {
   time = time / 1000;
@@ -675,3 +705,39 @@ async function fetchTeamSuggestions(query) {
 addAutocomplete(document.getElementById("autocompleteInput"));
 addAutocomplete(document.getElementById("dualMeetFirstTeamAutocomplete"));
 addAutocomplete(document.getElementById("dualMeetSecondTeamAutocomplete"));
+
+function printResults(isDual) {
+    const resultsDiv = isDual ? "resultsDiv" : "nonDualMeetResultsDiv";
+    const printWindow = window.open('', '', 'height=600,width=800');
+    const styles = `
+        <style>
+            table { width: 100%; border-collapse: collapse; margin-bottom: 1em; }
+            th, td { border: 1px solid black; padding: 8px; text-align: left; }
+            h1, h4 { margin: 1em 0; }
+            .delete-performance { display: none; }
+        </style>
+    `;
+    
+    printWindow.document.write(`
+        <html>
+            <head>
+                <title>Meet Results</title>
+                ${styles}
+            </head>
+            <body>
+                ${document.getElementById(resultsDiv).innerHTML}
+            </body>
+        </html>
+    `);
+    
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
+}
+
+// Add event listeners for print buttons
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('printDualMeet').addEventListener('click', () => printResults(true));
+    document.getElementById('printNonDualMeet').addEventListener('click', () => printResults(false));
+});
