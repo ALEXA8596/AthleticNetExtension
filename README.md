@@ -50,7 +50,7 @@ Navigate to different pages on [athletic.net](https://athletic.net) (including t
 ## Todo
 
 ❎ - Collection of Meets to aggregate together
-❎ - Filtering Hypothetical Results (By Grade) to Predict Future Season Results
+✅ - Filtering Hypothetical Results (By Grade) to Predict Future Season Results
 
 
 ## Acknowledgements
