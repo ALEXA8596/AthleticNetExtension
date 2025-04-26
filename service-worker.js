@@ -21,7 +21,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {
               if (url.pathname.split("/")[5] === "all") {
                 await chrome.sidePanel.setOptions({
                   tabId,
-                  path: 'sidepanel/TrackAndField/meet/allResults.html',
+                  path: 'sidepanel/TrackAndField/meet/allResults/index.html',
                   enabled: true
                 });
               }
@@ -30,7 +30,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {
               else if (url.pathname.split("/")[5] && url.pathname.split("/")[6] && url.pathname.split("/")[7]) {
                 await chrome.sidePanel.setOptions({
                   tabId,
-                  path: 'sidepanel/TrackAndField/meet/eventResults.html',
+                  path: 'sidepanel/TrackAndField/meet/eventResults/index.html',
                   enabled: true
                 });
               }
