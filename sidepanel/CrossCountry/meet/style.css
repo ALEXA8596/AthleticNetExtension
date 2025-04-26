@@ -121,3 +121,11 @@ html {
 .description {
   color: black;
 }
+
+canvas {
+  background-color: whitesmoke;
+}
+
+.histogramIntervalInput {
+  max-width: 100%;
+}

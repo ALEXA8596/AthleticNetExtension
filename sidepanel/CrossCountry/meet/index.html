@@ -17,7 +17,6 @@
       <p class="my-3 description">
         This page analyzes races, showing time distributions and other statistics.
       </p>
-      <!-- Create a textbox using bulma for the opposing team's id -->
       <div class="box p-3">
         <div class="field">
           <div class="control">
@@ -29,12 +28,28 @@
         </div>
         <canvas id="raceDistribution"></canvas>
       </div>
-      <script src="../../../build/bundle.js"></script>
-      <script src="script.js"></script>
-      <script src="../../../public/luxon.min.js"></script>
-      <script src="../../../public/chart.min.js"></script>
-      <script src="../../../public/chartjs-adapter-luxon.js"></script>
-    </section>
+      <div class="box p-3">
+        <!-- Histogram -->
+        <div class="field is-horizontal">
+          <div class="field-label is-normal">
+            <label class="label has-text-white">Interval (s):</label>
+          </div>
+          <div class="field-body">
+            <div class="control">
+              <input type="number" id="histogramInterval" class="input histogramIntervalInput" value="30" min="5" max="120">
+            </div>
+          </div>
+        </div>
+        <canvas id="histogram"></canvas>
+      </div>
+
+  </div>
+  <script src="../../../build/bundle.js"></script>
+  <script src="script.js"></script>
+  <script src="../../../public/luxon.min.js"></script>
+  <script src="../../../public/chart.min.js"></script>
+  <script src="../../../public/chartjs-adapter-luxon.js"></script>
+  </section>
   </div>
 </body>
 
