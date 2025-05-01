@@ -31,8 +31,10 @@ Navigate to different pages on [athletic.net](https://athletic.net) (including t
 
 ## Examples
 
-#### Race Simulation
-![Race Simulation](examples/RaceExample.png)
+#### Race Analysis
+![Race Analysis](examples/RaceExample.png)
+
+![Race Histogram](examples/RaceHistogram.png)
 
 #### Progression Analysis
 ![Progression Analysis](examples/ProgressionExample.png)
