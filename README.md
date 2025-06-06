@@ -29,6 +29,24 @@ Go to [the Athletic Helper listing on the Web Store](https://chromewebstore.goog
 
 Navigate to different pages on [athletic.net](https://athletic.net) (including team, meet, and athlete), and click the extension to open the sidebar.
 
+## Features
+
+### Athlete
+
+- Graphs the progression of an athlete in their events across age groups (Club, Middle School, High School, Unattached, etc)
+
+### Team
+
+- Simulates both invitational-style and dual meet scoring meets between schools using season bests. 
+- Filter through age groups and years
+- Delete injured / "fake" scores from the calculations
+- Print out results
+
+### Meet (CROSS COUNTRY ONLY FOR NOW)
+
+- Plot athlete distribution
+- Todo: Meet Simulation
+
 ## Examples
 
 #### Race Simulation
