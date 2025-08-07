@@ -10,28 +10,36 @@ chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {
   console.log(url.origin);
   console.log(url.pathname.split("/"));
   if (url.origin === "https://www.athletic.net") {
-
     switch (url.pathname.split("/")[1]) {
       case "TrackAndField":
         switch (url.pathname.split("/")[2]) {
           // /TrackAndField/meet/meetId/results
           case "meet":
             if (url.pathname.split("/")[4] === "results") {
+              await chrome.sidePanel.setOptions({
+                tabId,
+                path: "sidepanel/TrackAndField/meet/allResults/index.html",
+                enabled: true,
+              });
               // /TrackAndField/meet/531421/results/all
               if (url.pathname.split("/")[5] === "all") {
                 await chrome.sidePanel.setOptions({
                   tabId,
-                  path: 'sidepanel/TrackAndField/meet/allResults/index.html',
-                  enabled: true
+                  path: "sidepanel/TrackAndField/meet/allResults/index.html",
+                  enabled: true,
                 });
               }
 
               // /TrackAndField/meet/531421/results/gender/divId/eventShortName
-              else if (url.pathname.split("/")[5] && url.pathname.split("/")[6] && url.pathname.split("/")[7]) {
+              else if (
+                url.pathname.split("/")[5] &&
+                url.pathname.split("/")[6] &&
+                url.pathname.split("/")[7]
+              ) {
                 await chrome.sidePanel.setOptions({
                   tabId,
-                  path: 'sidepanel/TrackAndField/meet/eventResults/index.html',
-                  enabled: true
+                  path: "sidepanel/TrackAndField/meet/eventResults/index.html",
+                  enabled: true,
                 });
               }
             }
@@ -43,8 +51,8 @@ chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {
           case "meet":
             await chrome.sidePanel.setOptions({
               tabId,
-              path: 'sidepanel/CrossCountry/meet/index.html',
-              enabled: true
+              path: "sidepanel/CrossCountry/meet/index.html",
+              enabled: true,
             });
             break;
         }
@@ -53,18 +61,18 @@ chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {
         if (url.pathname.split("/")[3] === "cross-country") {
           await chrome.sidePanel.setOptions({
             tabId,
-            path: 'sidepanel/CrossCountry/team/index.html',
-            enabled: true
+            path: "sidepanel/CrossCountry/team/index.html",
+            enabled: true,
           });
-        } else
-          // pathname = /team/teamId/track-and-field-outdoor/seasonId
-          if (url.pathname.split("/")[3] === "track-and-field-outdoor") {
-            await chrome.sidePanel.setOptions({
-              tabId,
-              path: 'sidepanel/TrackAndField/team/index.html',
-              enabled: true
-            });
-          }
+        }
+        // pathname = /team/teamId/track-and-field-outdoor/seasonId
+        else if (url.pathname.split("/")[3] === "track-and-field-outdoor") {
+          await chrome.sidePanel.setOptions({
+            tabId,
+            path: "sidepanel/TrackAndField/team/index.html",
+            enabled: true,
+          });
+        }
         break;
       case "athlete":
         // pathname = /athlete/athleteId/cross-country/level
@@ -75,25 +83,24 @@ chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {
         if (url.pathname.split("/")[3] === "cross-country") {
           await chrome.sidePanel.setOptions({
             tabId,
-            path: 'sidepanel/CrossCountry/athlete/index.html',
-            enabled: true
+            path: "sidepanel/CrossCountry/athlete/index.html",
+            enabled: true,
           });
-        } else
-          // pathname = /athlete/athleteId/track-and-field/level
-          if (url.pathname.split("/")[3] === "track-and-field") {
-            await chrome.sidePanel.setOptions({
-              tabId,
-              path: 'sidepanel/TrackAndField/athlete/index.html',
-              enabled: true
-            });
-          }
+        }
+        // pathname = /athlete/athleteId/track-and-field/level
+        else if (url.pathname.split("/")[3] === "track-and-field") {
+          await chrome.sidePanel.setOptions({
+            tabId,
+            path: "sidepanel/TrackAndField/athlete/index.html",
+            enabled: true,
+          });
+        }
         break;
     }
-  }
-  else {
+  } else {
     await chrome.sidePanel.setOptions({
       tabId,
-      enabled: false
+      enabled: false,
     });
   }
 });
@@ -105,14 +112,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       const activeTab = tabs[0];
       sendResponse({ tab: activeTab });
     });
-    return true; 
+    return true;
   }
   if (request.action === "openSidebar") {
     chrome.tabs.query({ currentWindow: true }, (tabs) => {
       const activeTab = tabs[0];
       chrome.sidePanel.setOptions({
         tabId: activeTab.id,
-        enabled: true
+        enabled: true,
       });
     });
   }
@@ -192,7 +199,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   //             break;
   //         }
   //         // refresh side panel
-          
+
   //       } else {
   //         chrome.sidePanel.setOptions({
   //           tabId: activeTab.id,
