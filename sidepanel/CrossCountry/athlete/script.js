@@ -2,12 +2,14 @@
 
 var resultsOrganized = {};
 let myChartInstance = null;
+var currentUrl = "";
 
 function buttonClick() {
     chrome.runtime.sendMessage({
         action: "getCurrentTabUrl"
     }, async (response) => {
-        document.getElementById('current-tab-url').textContent = `Current Tab URL: ${response.tab.url}`;
+        // document.getElementById('current-tab-url').textContent = `Current Tab URL: ${response.tab.url}`;
+        currentUrl = response.tab.url;
         const url = new URL(response.tab.url);
         const [empty, type, athleteId, sport, level] = url.pathname.split("/");
         if (type === "athlete" && sport === "cross-country" && athleteId) {
@@ -119,6 +121,9 @@ function buttonClick() {
                 });
 
                 dropDown.children[0].selected = true;
+                
+                var event = new Event('change');
+                dropDown.dispatchEvent(event);
             });
         }
     });

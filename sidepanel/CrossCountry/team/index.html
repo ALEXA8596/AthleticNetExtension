@@ -31,15 +31,15 @@
                     Delete
                   </button>
                 </div>
-                <div class="control">
-                  <input id="firstTeam" type="text" class="input" name="teamId">
-                </div>
-                <!-- Suggestions -->
-                <div class="control">
-                  <input id="autocompleteInput" type="text" class="input" placeholder="Search for a team">
+                <!-- Search and Team Name Input -->
+                <div class="control is-expanded">
+                  <input id="autocompleteInput" type="text" class="input" placeholder="Search for a team" name="teamName">
                   <div id="autocompleteSuggestions" class="dropdown-content"></div>
                 </div>
-                <!-- End of Suggestions -->
+                <!-- End of Search and Team Name Input -->
+                <div class="control">
+                  <input id="firstTeam" type="text" class="input" name="teamId" placeholder="Team ID" hidden>
+                </div>
               </div>
             </div>
           </div>
@@ -60,6 +60,8 @@
         <br>
         <div id="resultsDiv">
           <div id="boys">
+            <h2 class="subtitle">Boys</h2>
+            <h3 class="subtitle is-5">Overall</h3>
             <table class="placementTable table is-striped is-fullwidth">
               <thead>
                 <tr>
@@ -80,9 +82,36 @@
                 </tr>
               </thead>
             </table>
+            <h3 class="subtitle is-5">Frosh/Soph Only (9th & 10th Grade)</h3>
+            <div class="mb-3">
+              <button id="boysRemoveTopSeven" class="button is-warning">Remove Team Top 7 from Frosh/Soph</button>
+              <button id="boysRefreshFroshSoph" class="button is-info">Refresh</button>
+            </div>
+            <table class="placementTableFroshSoph table is-striped is-fullwidth">
+              <thead>
+                <tr>
+                  <th>Place</th>
+                  <th>Grade</th>
+                  <th>Name</th>
+                  <th>Time</th>
+                  <th>Team</th>
+                </tr>
+              </thead>
+            </table>
+            <table class="scoreTableFroshSoph table is-striped is-fullwidth">
+              <thead>
+                <tr>
+                  <th>Placement</th>
+                  <th>Team</th>
+                  <th>Score</th>
+                </tr>
+              </thead>
+            </table>
           </div>
           <br>
           <div id="girls">
+            <h2 class="subtitle">Girls</h2>
+            <h3 class="subtitle is-5">Overall</h3>
             <table class="placementTable table is-striped is-fullwidth">
               <thead>
                 <tr>
@@ -95,6 +124,31 @@
               </thead>
             </table>
             <table class="scoreTable table is-striped is-fullwidth">
+              <thead>
+                <tr>
+                  <th>Placement</th>
+                  <th>Team</th>
+                  <th>Score</th>
+                </tr>
+              </thead>
+            </table>
+            <h3 class="subtitle is-5">Frosh/Soph Only (9th & 10th Grade)</h3>
+            <div class="mb-3">
+              <button id="girlsRemoveTopSeven" class="button is-warning">Remove Team Top 7 from Frosh/Soph</button>
+              <button id="girlsRefreshFroshSoph" class="button is-info">Refresh</button>
+            </div>
+            <table class="placementTableFroshSoph table is-striped is-fullwidth">
+              <thead>
+                <tr>
+                  <th>Place</th>
+                  <th>Grade</th>
+                  <th>Name</th>
+                  <th>Time</th>
+                  <th>Team</th>
+                </tr>
+              </thead>
+            </table>
+            <table class="scoreTableFroshSoph table is-striped is-fullwidth">
               <thead>
                 <tr>
                   <th>Placement</th>

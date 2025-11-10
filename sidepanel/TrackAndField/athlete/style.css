@@ -122,3 +122,13 @@ html {
 .box {
   background-color: rgb(70, 70, 70);
 }
+
+.chart-container {
+  width: 100%;
+  height: auto;
+}
+
+#myChart {
+  width: 100% !important;
+  height: auto !important;
+}

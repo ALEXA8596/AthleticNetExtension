@@ -210,5 +210,14 @@ html {
 /* Add table header styling */
 .table thead th {
     background-color: transparent !important;
-    color: white !important;
+    color: black !important;
+}
+
+.delete-performance {
+    padding: 0 !important;
+    width: 0.6rem !important;
+    height: 0.6rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }

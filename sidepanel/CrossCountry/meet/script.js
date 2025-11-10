@@ -167,7 +167,8 @@ window.onload = function () {
 
         document.getElementsByTagName('select')[0].children[0].selected = true;
 
-
+        var event = new Event('change');
+        document.getElementsByTagName('select')[0].dispatchEvent(event);
 
 
     });

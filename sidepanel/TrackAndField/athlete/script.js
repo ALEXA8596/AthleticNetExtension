@@ -88,6 +88,8 @@ function buttonClick() {
                 // set dropDown to enabled
                 dropDown.disabled = false;
 
+                
+
                 dropDown.addEventListener('change', async (e) => {
                     const value = e.target.value;
                     var DateTime = luxon.DateTime;
@@ -190,6 +192,11 @@ function buttonClick() {
                     }
                     myChartInstance = new Chart(chartCanvasElement, configuration);
                 });
+
+                dropDown.children[0].selected = true;
+                
+                var event = new Event('change');
+                dropDown.dispatchEvent(event);
             });
         }
     });

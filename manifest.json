@@ -17,9 +17,14 @@
         "tabs",
         "activeTab"
     ],
+    "content_security_policy": {
+        "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' https://www.athletic.net https://athletic.net;"
+    },
     "host_permissions": [
-    "http://athletic.net/*",
-    "https://athletic.net/*"
+        "http://athletic.net/*",
+        "https://athletic.net/*",
+        "http://www.athletic.net/*",
+        "https://www.athletic.net/*"
     ],
     "background": {
         "service_worker": "service-worker.js"

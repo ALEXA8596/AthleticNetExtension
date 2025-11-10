@@ -114,6 +114,32 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     });
     return true;
   }
+  
+  // Bypass CORS
+  if (request.action === "makeApiRequest") {
+    fetch(request.url, request.options)
+      .then(response => {
+        if (request.responseType === 'text') {
+          return response.text();
+        }
+        return response.json();
+      })
+      .then(data => {
+        // For seasonBests and TeamRecords, we need to parse the HTML
+        if (request.url.includes('seasonbest') || request.url.includes('TeamRecords')) {
+          // Since we can't use DOMParser in service worker, return the raw HTML
+          // The client side will need to handle parsing
+          sendResponse({ success: true, data: data, isHTML: true });
+        } else {
+          sendResponse({ success: true, data: data });
+        }
+      })
+      .catch(error => {
+        sendResponse({ success: false, error: error.message });
+      });
+    return true; // Keep the message channel open for async response
+  }
+  
   if (request.action === "openSidebar") {
     chrome.tabs.query({ currentWindow: true }, (tabs) => {
       const activeTab = tabs[0];

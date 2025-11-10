@@ -1,3 +1,16 @@
+/* Declare Variables */
+:root {
+  --background: #1e1e1e;
+  --foreground: #d4d4d4;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #f3f3f3;
+    --foreground: #202020;
+  }
+}
+
 .fira-sans-thin {
   font-family: "Fira Sans", sans-serif;
   font-weight: 100;
@@ -131,4 +144,14 @@ html {
 
 .description {
   color: black;
+}
+
+.dropdown-item {
+  cursor: pointer;
+  color: var(--foreground);
+  background-color: var(--background);
+}
+
+.subtitle {
+  color: white;
 }
