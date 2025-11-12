@@ -8,29 +8,39 @@
   <!-- import bulma -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
   <link href="./style.css" rel="stylesheet" />
-  <link href="../../common/team-selector.css" rel="stylesheet" />
-  <link href="../../common/accordion.css" rel="stylesheet" />
-  <link href="../../navbar.css" rel="stylesheet" />
-  <script src="../../../public/jquery-3.7.1.min.js"></script>
-  <script src="../../navbar.js"></script>
-  <script src="../../common/accordion.js"></script>
+  <link href="../common/team-selector.css" rel="stylesheet" />
+  <link href="../common/accordion.css" rel="stylesheet" />
+  <link href="../navbar.css" rel="stylesheet" />
+  <script src="../../public/jquery-3.7.1.min.js"></script>
+  <script src="../navbar.js"></script>
+  <script src="../common/accordion.js"></script>
 </head>
 
 <body>
   <div class="container">
     <section class="section">
-      <h1 class="my-3 title pageTitle">Cross Country Meet Simulator</h1>
+      <h1 class="my-3 title pageTitle">Division Meet Simulator</h1>
       <p class="my-3 description">
-        This page simulates a dual meet between two teams. (The team on the
-        current website, and the team provided)
+        This page simulates a meet between all teams in a selected division. You can also add teams manually.
       </p>
       <!-- Create a textbox using bulma for the opposing team's id -->
       <div class="container box py-3">
         <form id="teamsInput">
+          <div class="field">
+            <label class="label has-text-white">Select Division</label>
+            <div class="control">
+              <div class="select is-fullwidth">
+                <select id="divisionSelect">
+                  <option value="">Loading divisions...</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
           <div id="teamSelectorContainer" class="field">
             <div class="team-tag-container"></div>
             <div class="control">
-              <input type="text" class="input team-search" placeholder="Search for a team" autocomplete="off">
+              <input type="text" class="input team-search" placeholder="Search for a team to add" autocomplete="off">
               <div class="suggestions-box"></div>
             </div>
           </div>
@@ -41,7 +51,7 @@
               <label class="label has-text-white">Saved Lists</label>
               <div class="control">
                 <div class="select is-fullwidth">
-                  <select id="teamListSelectCrossCountry">
+                  <select id="teamListSelectDivision">
                     <option value="">Select saved list...</option>
                   </select>
                 </div>
@@ -50,14 +60,14 @@
             <div class="field">
               <label class="label has-text-white">List Name</label>
               <div class="control">
-                <input type="text" id="teamListNameCrossCountry" class="input" placeholder="Enter list name">
+                <input type="text" id="teamListNameDivision" class="input" placeholder="Enter list name">
               </div>
             </div>
             <div class="buttons">
-              <button type="button" id="loadTeamListCrossCountry" class="button is-link is-light">Load</button>
-              <button type="button" id="saveTeamListCrossCountry" class="button is-success is-light">Save as New</button>
-              <button type="button" id="updateTeamListCrossCountry" class="button is-primary is-light">Update</button>
-              <button type="button" id="deleteTeamListCrossCountry" class="button is-danger is-light">Delete</button>
+              <button type="button" id="loadTeamListDivision" class="button is-link is-light">Load</button>
+              <button type="button" id="saveTeamListDivision" class="button is-success is-light">Save as New</button>
+              <button type="button" id="updateTeamListDivision" class="button is-primary is-light">Update</button>
+              <button type="button" id="deleteTeamListDivision" class="button is-danger is-light">Delete</button>
             </div>
           </div>
           <div class="container mt-3">
@@ -80,15 +90,6 @@
         <div id="resultsDiv">
           <div id="boys">
             <h2 class="subtitle">Boys</h2>
-            <div class="results-filter-bar">
-              <div class="buttons has-addons is-small result-filter-buttons" data-gender="boys">
-                <button type="button" class="button is-small is-link is-light result-filter-button" data-filter="overall">Overall</button>
-                <button type="button" class="button is-small is-link is-light result-filter-button" data-filter="froshSoph">Frosh/Soph</button>
-                <button type="button" class="button is-small is-link is-light result-filter-button" data-filter="jv">JV</button>
-                <button type="button" class="button is-small is-link is-light result-filter-button" data-filter="reserve">Reserve</button>
-              </div>
-              <p class="is-size-6 has-text-weight-semibold current-filter-label" data-gender="boys">Showing: Overall</p>
-            </div>
             <h3 class="subtitle is-5">Placements</h3>
             <table class="placementTable table is-striped is-fullwidth">
               <thead>
@@ -117,15 +118,6 @@
           <br>
           <div id="girls">
             <h2 class="subtitle">Girls</h2>
-            <div class="results-filter-bar">
-              <div class="buttons has-addons is-small result-filter-buttons" data-gender="girls">
-                <button type="button" class="button is-small is-link is-light result-filter-button" data-filter="overall">Overall</button>
-                <button type="button" class="button is-small is-link is-light result-filter-button" data-filter="froshSoph">Frosh/Soph</button>
-                <button type="button" class="button is-small is-link is-light result-filter-button" data-filter="jv">JV</button>
-                <button type="button" class="button is-small is-link is-light result-filter-button" data-filter="reserve">Reserve</button>
-              </div>
-              <p class="is-size-6 has-text-weight-semibold current-filter-label" data-gender="girls">Showing: Overall</p>
-            </div>
             <h3 class="subtitle is-5">Placements</h3>
             <table class="placementTable table is-striped is-fullwidth">
               <thead>
@@ -154,9 +146,9 @@
         </div>
       </div>
     </section>
-    <script src="../../common/teamSelector.js"></script>
+    <script src="../common/teamSelector.js"></script>
     <script src="script.js"></script>
-    <script src="../../../build/bundle.js"></script>
+    <script src="../../build/bundle.js"></script>
   </div>
 </body>
 

@@ -10,7 +10,10 @@
   <!-- import bulma -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
   <link href="./style.css" rel="stylesheet" />
+  <link href="../../../common/team-selector.css" rel="stylesheet" />
+  <link href="../../../navbar.css" rel="stylesheet" />
   <script src="../../../../public/jquery-3.7.1.min.js"></script>
+  <script src="../../../navbar.js"></script>
 </head>
 
 <body>
@@ -33,20 +36,38 @@
                 <p class="help has-text-white">This should auto-populate. If not, copy the first set of numbers from the address bar.</p>
               </div>
             </div>
-            <div id="listOfIDs" class="px-0">
-              <div class="field">
-                <div class="team-tag-container"></div>
-                <div class="control">
-                  <input type="text" class="input team-search" placeholder="Search for teams...">
-                  <div class="suggestions-box"></div>
-                </div>
+            <div id="meetNonDualTeamSelector" class="field">
+              <div class="team-tag-container"></div>
+              <div class="control">
+                <input type="text" class="input team-search" placeholder="Search for teams..." autocomplete="off">
+                <div class="suggestions-box"></div>
               </div>
             </div>
-
-            <button id="rowAdder" type="button" class="button is-dark">
-              <span class="bi bi-plus-square-dotted"></span> Add Team
-            </button>
-            <br>
+            <div class="team-list-manager">
+              <h2 class="subtitle is-5 has-text-white">Saved Team Lists</h2>
+              <div class="field">
+                <label class="label has-text-white">Saved Lists</label>
+                <div class="control">
+                  <div class="select is-fullwidth">
+                    <select id="teamListSelectMeetNonDual">
+                      <option value="">Select saved list...</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="field">
+                <label class="label has-text-white">List Name</label>
+                <div class="control">
+                  <input type="text" id="teamListNameMeetNonDual" class="input" placeholder="Enter list name">
+                </div>
+              </div>
+              <div class="buttons">
+                <button type="button" id="loadTeamListMeetNonDual" class="button is-link is-light">Load</button>
+                <button type="button" id="saveTeamListMeetNonDual" class="button is-success is-light">Save as New</button>
+                <button type="button" id="updateTeamListMeetNonDual" class="button is-primary is-light">Update</button>
+                <button type="button" id="deleteTeamListMeetNonDual" class="button is-danger is-light">Delete</button>
+              </div>
+            </div>
 
             <div class="container mt-3">
               <div class="field">
@@ -69,7 +90,7 @@
               <button type="submit" id="simulateButton" class="button is-primary">Simulate</button>
               <button type="button" id="printNonDualMeet" class="button is-info">
                 <span class="icon">
-                  <span>🖨️</span>
+                  <span>&#x1F5A8;</span>
                 </span>
                 <span>Print Results</span>
               </button>
@@ -124,13 +145,37 @@
                     <p class="help has-text-white">This should auto-populate. If not, copy the first set of numbers from the address bar.</p>
                   </div>
                 </div>
-                <div id="dualMeetTeams">
+                <div id="meetDualTeamSelector" class="field">
+                  <div class="team-tag-container"></div>
+                  <div class="control">
+                    <input type="text" class="input team-search" placeholder="Search for teams..." autocomplete="off">
+                    <div class="suggestions-box"></div>
+                  </div>
+                </div>
+
+                <div class="team-list-manager">
+                  <h2 class="subtitle is-5 has-text-white">Saved Team Lists</h2>
                   <div class="field">
-                    <div class="team-tag-container"></div>
+                    <label class="label has-text-white">Saved Lists</label>
                     <div class="control">
-                      <input type="text" class="input team-search" placeholder="Search for teams...">
-                      <div class="suggestions-box"></div>
+                      <div class="select is-fullwidth">
+                        <select id="teamListSelectMeetDual">
+                          <option value="">Select saved list...</option>
+                        </select>
+                      </div>
                     </div>
+                  </div>
+                  <div class="field">
+                    <label class="label has-text-white">List Name</label>
+                    <div class="control">
+                      <input type="text" id="teamListNameMeetDual" class="input" placeholder="Enter list name">
+                    </div>
+                  </div>
+                  <div class="buttons">
+                    <button type="button" id="loadTeamListMeetDual" class="button is-link is-light">Load</button>
+                    <button type="button" id="saveTeamListMeetDual" class="button is-success is-light">Save as New</button>
+                    <button type="button" id="updateTeamListMeetDual" class="button is-primary is-light">Update</button>
+                    <button type="button" id="deleteTeamListMeetDual" class="button is-danger is-light">Delete</button>
                   </div>
                 </div>
 
@@ -155,7 +200,7 @@
                   <button type="submit" id="dualMeetSimulateButton" class="button is-primary">Simulate</button>
                   <button type="button" id="printDualMeet" class="button is-info">
                     <span class="icon">
-                      <span>🖨️</span>
+                      <span>&#x1F5A8;</span>
                     </span>
                     <span>Print Results</span>
                   </button>
@@ -203,6 +248,7 @@
         </div>
       </div>
 
+      <script src="../../../common/teamSelector.js"></script>
       <script src="script.js"></script>
       <script src="../../../../build/bundle.js"></script>
     </section>

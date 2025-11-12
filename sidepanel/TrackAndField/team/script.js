@@ -1,5 +1,9 @@
 var resultsOrganized = {};
 let myChartInstance = null;
+let nonDualTeamSelector = null;
+let dualTeamSelector = null;
+let nonDualListManager = null;
+let dualListManager = null;
 
 function openPage(pageName, elmnt, color) {
   var i, tabcontent, tablinks;
@@ -17,6 +21,49 @@ function openPage(pageName, elmnt, color) {
 
 document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("defaultOpen").click();
+
+  if (!window.TeamSelection) {
+    console.warn("TeamSelection module not available");
+    return;
+  }
+
+  const nonDualContainer = document.getElementById("nonDualTeamSelector");
+  if (nonDualContainer) {
+    nonDualTeamSelector = TeamSelection.createSelector({
+      container: nonDualContainer,
+    });
+
+    nonDualListManager = TeamSelection.createListManager({
+      selector: nonDualTeamSelector,
+      storageKey: "track-team-nonDual",
+      selectElement: document.getElementById("teamListSelectTrackNonDual"),
+      nameInput: document.getElementById("teamListNameTrackNonDual"),
+      saveButton: document.getElementById("saveTeamListTrackNonDual"),
+      updateButton: document.getElementById("updateTeamListTrackNonDual"),
+      deleteButton: document.getElementById("deleteTeamListTrackNonDual"),
+      loadButton: document.getElementById("loadTeamListTrackNonDual"),
+      emptyMessage: "Select at least one team before saving.",
+    });
+  }
+
+  const dualContainer = document.getElementById("dualTeamSelector");
+  if (dualContainer) {
+    dualTeamSelector = TeamSelection.createSelector({
+      container: dualContainer,
+    });
+
+    dualListManager = TeamSelection.createListManager({
+      selector: dualTeamSelector,
+      storageKey: "track-team-dual",
+      selectElement: document.getElementById("teamListSelectTrackDual"),
+      nameInput: document.getElementById("teamListNameTrackDual"),
+      saveButton: document.getElementById("saveTeamListTrackDual"),
+      updateButton: document.getElementById("updateTeamListTrackDual"),
+      deleteButton: document.getElementById("deleteTeamListTrackDual"),
+      loadButton: document.getElementById("loadTeamListTrackDual"),
+      emptyMessage: "Select two teams before saving.",
+    });
+  }
 });
 
 window.onload = function () {
@@ -26,54 +73,26 @@ window.onload = function () {
     },
     async (response) => {
       const url = new URL(response.tab.url);
-      const [empty, type, teamId, sport, level] = url.pathname.split("/");
-      if (type !== "team" || sport !== "cross-country") return;
-      document.getElementById("firstTeam").value = teamId;
-      document.getElementById("dualMeetFirstTeam").value = teamId;
+      const [empty, type, teamId, sport] = url.pathname.split("/");
+      if (type !== "team" || sport !== "track-and-field") return;
+
+      try {
+        const currentYear = new Date().getFullYear();
+        const teamInfo = await athleticWrapper.track.team.Team(teamId, currentYear);
+        const teamName = teamInfo?.team?.Name || `Team ${teamId}`;
+
+        if (nonDualTeamSelector && nonDualTeamSelector.getTeams().length === 0) {
+          nonDualTeamSelector.addTeam({ id: teamId, name: teamName, label: teamName });
+        }
+        if (dualTeamSelector && dualTeamSelector.getTeams().length === 0) {
+          dualTeamSelector.addTeam({ id: teamId, name: teamName, label: teamName });
+        }
+      } catch (error) {
+        console.warn("Unable to preload track team", error);
+      }
     }
   );
 };
-
-$("body").on("click", "#DeleteRow", function () {
-  $(this).closest(".column").remove();
-});
-
-document
-  .getElementById("listOfIDs")
-  .addEventListener("paste", function (event) {
-    event.preventDefault();
-
-    const paste = event.clipboardData.getData("text");
-
-    const lines = paste.split("\n");
-
-    const input = event.target;
-
-    // get the input element's position in its parent
-    const index = Array.from(input.parentNode.children).indexOf(input);
-
-    lines.forEach((line, i) => {
-      const newRowAdd = `
-            <div class="column px-0">
-                <div class="field has-addons">
-                    <div class="control">
-                        <button class="button is-danger" id="DeleteRow" type="button">
-                            <i class="bi bi-trash"></i>
-                            Delete
-                        </button>
-                    </div>
-                    <div class="control">
-                        <input type="text" class="input" name="teamId" value="${line}">
-                    </div>
-                </div>
-            </div>`;
-      if (i === 0 && input.value === "") {
-        $(input).val(line);
-      } else {
-        $(input).closest(".column").after(newRowAdd);
-      }
-    });
-  });
 
 var teamsData = {};
 
@@ -81,8 +100,17 @@ document
   .getElementById("teamsInputNonDualMeet")
   .addEventListener("submit", async function (event) {
     event.preventDefault();
+    if (!nonDualTeamSelector) {
+      alert("Team selector is not available. Please reload the side panel.");
+      return;
+    }
     const formData = new FormData(event.target);
-    const teamIds = formData.getAll("teamId");
+    const selectedTeams = nonDualTeamSelector.getTeams();
+    if (selectedTeams.length === 0) {
+      alert("Add at least one team to simulate the meet.");
+      return;
+    }
+    const teamIds = selectedTeams.map((team) => team.id);
     const year = formData.get("nonDualMeetYear");
     const currentYear = new Date().getFullYear();
     if (year > currentYear) {
@@ -108,8 +136,17 @@ document
   .getElementById("teamsInput")
   .addEventListener("submit", async function (event) {
     event.preventDefault();
+    if (!dualTeamSelector) {
+      alert("Team selector is not available. Please reload the side panel.");
+      return;
+    }
     const formData = new FormData(event.target);
-    const teamIds = formData.getAll("teamId");
+    const selectedTeams = dualTeamSelector.getTeams();
+    if (selectedTeams.length < 2) {
+      alert("Select two teams to simulate a dual meet.");
+      return;
+    }
+    const teamIds = selectedTeams.map((team) => team.id);
     const year = formData.get("dualMeetYear");
     // get today's year and check if its greater than or equal to the submitted year
     const currentYear = new Date().getFullYear();
@@ -709,97 +746,6 @@ document
   .addEventListener("click", async function () {
     openPage("dualMeet", this, "lightgreen");
   });
-
-function initializeTagSystem(containerElement) {
-  const teamContainer = containerElement.querySelector(".team-tag-container");
-  const searchInput = containerElement.querySelector(".team-search");
-  const suggestionsBox = containerElement.querySelector(".suggestions-box");
-  const selectedTeams = new Map();
-
-  function addTeamTag(teamId, teamName) {
-    if (selectedTeams.has(teamId)) return;
-
-    const tag = document.createElement("div");
-    tag.className = "team-tag";
-    tag.innerHTML = `
-            ${teamName}
-            <button type="button" class="delete-tag" data-team-id="${teamId}">×</button>
-            <input type="hidden" name="teamId" value="${teamId}">
-        `;
-
-    tag.querySelector(".delete-tag").addEventListener("click", () => {
-      selectedTeams.delete(teamId);
-      tag.remove();
-    });
-
-    teamContainer.appendChild(tag);
-    selectedTeams.set(teamId, teamName);
-    searchInput.value = "";
-  }
-
-  searchInput.addEventListener("input", async function () {
-    if (this.value.length < 3) {
-      suggestionsBox.innerHTML = "";
-      return;
-    }
-
-    const suggestions = await fetchTeamSuggestions(this.value);
-    suggestionsBox.innerHTML = "";
-
-    suggestions.forEach((team) => {
-      if (!selectedTeams.has(team.id_db)) {
-        const div = document.createElement("div");
-        div.className = "suggestion-item";
-        div.textContent = team.textsuggest + ` (${team.subtext})`;
-        div.addEventListener("click", () => {
-          addTeamTag(team.id_db, team.textsuggest + ` (${team.subtext})`);
-          suggestionsBox.innerHTML = "";
-        });
-        suggestionsBox.appendChild(div);
-      }
-    });
-  });
-
-  // Close suggestions when clicking outside
-  document.addEventListener("click", function (e) {
-    if (!containerElement.contains(e.target)) {
-      suggestionsBox.innerHTML = "";
-    }
-  });
-}
-
-// Initialize tag systems
-document.addEventListener("DOMContentLoaded", function () {
-  // For dual meet
-  initializeTagSystem(document.querySelector("#dualMeetTeams"));
-  // For non-dual meet
-  initializeTagSystem(document.querySelector("#listOfIDs"));
-});
-
-function displaySuggestions(suggestions, inputElement) {
-  const suggestionsContainer = inputElement.nextElementSibling;
-  suggestionsContainer.innerHTML = "";
-  suggestions.forEach((team) => {
-    const suggestionItem = document.createElement("div");
-    suggestionItem.classList.add("dropdown-item");
-    suggestionItem.textContent = team.textsuggest;
-    suggestionItem.addEventListener("click", () => {
-      inputElement.value = team.textsuggest;
-      inputElement
-        .closest(".field")
-        .querySelector('input[name="teamId"]').value = team.id_db;
-      suggestionsContainer.innerHTML = "";
-    });
-    suggestionsContainer.appendChild(suggestionItem);
-  });
-}
-
-async function fetchTeamSuggestions(query) {
-  // Replace with actual API call to fetch team suggestions
-  const response = await window.athleticWrapper.search.AutoComplete(query);
-  console.log(response);
-  return response.response.docs.filter((doc) => doc.type === "Team");
-}
 
 function printResults(isDual) {
   console.log(

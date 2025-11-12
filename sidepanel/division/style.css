@@ -1,3 +1,16 @@
+/* Declare Variables */
+:root {
+  --background: #1e1e1e;
+  --foreground: #d4d4d4;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #f3f3f3;
+    --foreground: #202020;
+  }
+}
+
 .fira-sans-thin {
   font-family: "Fira Sans", sans-serif;
   font-weight: 100;
@@ -106,47 +119,19 @@
   font-style: italic;
 }
 
-/* Style tab links */
-.tablink {
-  background-color: #555;
-  color: white;
-  float: left;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  padding: 14px 16px;
-  font-size: 17px;
-  width: 50%;
+
+.welcomeMessage {
+  font-family: "Fira Sans", sans-serif;
+  font-weight: 400;
+  font-style: normal;
 }
 
-.tablink:hover {
-  background-color: #777;
+td {
+  padding: 0 15px;
 }
-
-/* Style the tab content (and add height:100% for full page content) */
-.tabcontent {
-  color: white;
-  display: none;
-  padding: 100px 20px;
-  height: 100%;
-  opacity: 0;
-  transition: opacity 0.5s ease-in-out;
-}
-
-.tabcontent.active {
-  display: block;
-  opacity: 1;
-}
-
-#nonDualMeet {background-color: lightcoral;}
-#dualMeet {background-color: lightgreen;}
 
 html {
   background-color: lightblue;
-}
-
-.description {
-  color: black;
 }
 
 .pageTitle {
@@ -157,18 +142,16 @@ html {
   background-color: rgb(70, 70, 70);
 }
 
-/* Add table header styling */
-.table thead th {
-    background-color: transparent !important;
-    color: black !important;
+.description {
+  color: black;
 }
 
-/* Delete performance button styling */
-.delete-performance {
-    padding: 0 !important;
-    width: 0.6rem !important;
-    height: 0.6rem !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+.dropdown-item {
+  cursor: pointer;
+  color: var(--foreground);
+  background-color: var(--background);
+}
+
+.subtitle {
+  color: white;
 }

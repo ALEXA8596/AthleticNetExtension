@@ -1,3 +1,29 @@
+// Translate raw grade strings (e.g. "FR", "SR") into numeric grade levels.
+function normalizeGradeValue(rawGrade) {
+  if (rawGrade == null) {
+    return null;
+  }
+  const parsed = parseInt(rawGrade, 10);
+  if (!Number.isNaN(parsed)) {
+    return parsed;
+  }
+  const normalized = String(rawGrade).trim().toUpperCase();
+  switch (normalized) {
+    case "FR":
+    case "F":
+      return 9;
+    case "SO":
+    case "SOPH":
+      return 10;
+    case "JR":
+      return 11;
+    case "SR":
+      return 12;
+    default:
+      return null;
+  }
+}
+
 // Request the current tab URL from the background script
 async function simulateMeet(teamsData, selectedCourse = null) {
   function MMSSMSToSeconds(time) {
@@ -47,20 +73,55 @@ async function simulateMeet(teamsData, selectedCourse = null) {
           allTeamMembers.push(athlete);
           allAthletesUnfiltered[gender].push({ ...athlete }); // Save copy of all athletes
         });
+
+        allTeamMembers.sort((a, b) => a.time - b.time);
+
         const firstSeven = allTeamMembers.slice(0, 7);
-        if (firstSeven.length >= 5) {
-          // Track which athletes are top 7 for their team
-          if (!teamTop7[gender][key]) {
-            teamTop7[gender][key] = new Set();
-          }
-          firstSeven.forEach((athlete) => {
-            teamTop7[gender][key].add(`${athlete.name}-${athlete.team}`);
-            allAthletes.push(athlete);
-          });
+        if (!teamTop7[gender][key]) {
+          teamTop7[gender][key] = new Set();
         }
+        firstSeven.forEach((athlete) => {
+          teamTop7[gender][key].add(`${athlete.name}-${athlete.team}`);
+        });
+
+        allTeamMembers.forEach((athlete) => {
+          allAthletes.push(athlete);
+        });
       }
     }
     const allAthletesSorted = allAthletes.sort((a, b) => a.time - b.time);
+
+    const teamRankCounters = {};
+    const nonSeniorCounters = {};
+
+    allAthletesSorted.forEach((athlete) => {
+      const teamId = athlete.team;
+      const gradeInt = normalizeGradeValue(athlete.grade);
+      athlete.gradeInt = gradeInt;
+      athlete.isSenior = gradeInt === 12;
+
+      const updatedTeamRank = (teamRankCounters[teamId] || 0) + 1;
+      teamRankCounters[teamId] = updatedTeamRank;
+      athlete.teamRank = updatedTeamRank;
+
+      const priorNonSeniorCount = nonSeniorCounters[teamId] || 0;
+      athlete.nonSeniorCountBefore = priorNonSeniorCount;
+
+      if (athlete.isSenior) {
+        athlete.nonSeniorRank = null;
+      } else {
+        const newCount = priorNonSeniorCount + 1;
+        nonSeniorCounters[teamId] = newCount;
+        athlete.nonSeniorRank = newCount;
+      }
+
+      const topSevenSet = teamTop7[gender]?.[teamId];
+      if (topSevenSet) {
+        athlete.isTop7 = topSevenSet.has(`${athlete.name}-${athlete.team}`);
+      } else {
+        athlete.isTop7 = athlete.teamRank <= 7;
+      }
+    });
     results[gender] = allAthletesSorted;
     const teamScores = {};
     for (var key in teamsData) {
@@ -214,24 +275,107 @@ function buildApiOptions(method, ...args) {
 }
 
 var teamsData = {};
+var teamNameMapGlobal = {};
+var teamSelector = null;
+var teamListManager = null;
+
+const DEFAULT_RESULT_FILTER = "overall";
+const RESULT_FILTERS = {
+  overall: {
+    label: "Overall",
+    predicate: () => true,
+  },
+  froshSoph: {
+    label: "Frosh/Soph",
+    predicate: (athlete) => {
+      if (!athlete || athlete.isTop7) {
+        return false;
+      }
+      return athlete.gradeInt === 9 || athlete.gradeInt === 10;
+    },
+  },
+  jv: {
+    label: "JV",
+    predicate: (athlete) => {
+      if (!athlete || athlete.isTop7) {
+        return false;
+      }
+      return athlete.gradeInt !== 12;
+    },
+  },
+  reserve: {
+    label: "Reserve",
+    predicate: (athlete) => {
+      if (!athlete || athlete.isTop7) {
+        return false;
+      }
+      // Include athletes once fourteen non-senior teammates have already finished.
+      const nonSeniorThresholdMet = (!athlete.isSenior && athlete.nonSeniorRank != null && athlete.nonSeniorRank > 14) ||
+        (athlete.isSenior && athlete.nonSeniorCountBefore > 14);
+      return Boolean(nonSeniorThresholdMet);
+    },
+  },
+};
+
+let filterButtonsInitialized = false;
+
+document.addEventListener("DOMContentLoaded", () => {
+  const selectorContainer = document.getElementById("teamSelectorContainer");
+  if (!selectorContainer || !window.TeamSelection) {
+    return;
+  }
+
+  teamSelector = TeamSelection.createSelector({
+    container: selectorContainer,
+    normalizeSuggestion: (doc) => {
+      const normalized = TeamSelection.normalizeSuggestion(doc);
+      if (!normalized) return null;
+      return {
+        id: normalized.id,
+        name: normalized.name,
+        label: normalized.label,
+        subtext: normalized.subtext,
+      };
+    },
+  });
+
+  teamListManager = TeamSelection.createListManager({
+    selector: teamSelector,
+    storageKey: "crosscountry-meet-teamLists",
+    selectElement: document.getElementById("teamListSelectCrossCountry"),
+    nameInput: document.getElementById("teamListNameCrossCountry"),
+    saveButton: document.getElementById("saveTeamListCrossCountry"),
+    updateButton: document.getElementById("updateTeamListCrossCountry"),
+    deleteButton: document.getElementById("deleteTeamListCrossCountry"),
+    loadButton: document.getElementById("loadTeamListCrossCountry"),
+    emptyMessage: "Select at least one team before saving.",
+  });
+
+  initializeResultFilterButtons();
+});
 
 document
   .getElementById("teamsInput")
   .addEventListener("submit", async function (event) {
     event.preventDefault();
-    const formData = new FormData(event.target);
-    const teamIds = formData.getAll("teamId");
-    const teamNames = formData.getAll("teamName");
-    teamsData = {};
-    
-    // Store team names
+    if (!teamSelector) {
+      alert("Team selector is not ready yet. Please reload the side panel.");
+      return;
+    }
+
+    const selectedTeams = teamSelector.getTeams();
+    if (selectedTeams.length === 0) {
+      alert("Add at least one team to simulate a meet.");
+      return;
+    }
+
     const teamNameMap = {};
-    teamIds.forEach((id, index) => {
-      if (id) {
-        teamNameMap[id] = teamNames[index] || id;
-      }
+    const teamIds = selectedTeams.map((team) => {
+      teamNameMap[team.id] = team.name;
+      return team.id;
     });
-    
+
+    teamsData = {};
     await Promise.all(
       teamIds.map(async (teamId) => {
         if (teamId) {
@@ -239,9 +383,11 @@ document
         }
       })
     );
-    console.log(teamsData);
+
+    teamNameMapGlobal = teamNameMap;
+
     const results = await simulateMeet(teamsData);
-    results.teamNames = teamNameMap;
+    results.teamNames = { ...teamNameMap };
 
     const distanceSelect = document.getElementById("distance");
     distanceSelect.innerHTML = "";
@@ -256,192 +402,236 @@ document
   });
 
 function updateResults(results) {
-  const course = results.course;
-  const scores = results.scores;
-  const placementResults = results.results;
-  const resultsDiv = document.getElementById("resultsDiv");
+  if (!results.teamNames || Object.keys(results.teamNames).length === 0) {
+    results.teamNames = { ...teamNameMapGlobal };
+  }
 
-  // Store the full results for frosh-soph filtering
-  window.fullResults = results;
-  window.fullResultsWithoutTopSeven = JSON.parse(JSON.stringify(results));
+  const previousFilters = window.fullResults?.activeFilters || {};
+  const teamNames = results.teamNames || {};
 
-  ["boys", "girls"].forEach(async (gender) => {
-    const genderResults = placementResults[gender];
-    const table = resultsDiv.querySelector(`#${gender} .placementTable`);
-    table.innerHTML = "";
-    genderResults.forEach((athlete, i) => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-                <td>${i + 1}</td>
-                <td>${athlete.grade}</td>
-                <td>${athlete.name}</td>
-                <td>${timeInSecondsToMMSSMS(athlete.time)}</td>
-                <td>${athlete.team}</td>
-            `;
-      table.appendChild(row);
+  window.fullResults = {
+    ...results,
+    teamNames,
+    activeFilters: { ...previousFilters },
+    teamIds: Object.keys(teamNames),
+  };
+
+  initializeResultFilterButtons();
+
+  ["boys", "girls"].forEach((gender) => {
+    const desiredFilter = window.fullResults.activeFilters[gender] || DEFAULT_RESULT_FILTER;
+    setActiveResultFilter(gender, desiredFilter);
+  });
+}
+
+function initializeResultFilterButtons() {
+  if (filterButtonsInitialized) {
+    return;
+  }
+
+  const containers = document.querySelectorAll(".result-filter-buttons");
+  containers.forEach((container) => {
+    const gender = container.dataset.gender;
+    const buttons = container.querySelectorAll(".result-filter-button");
+    buttons.forEach((button) => {
+      button.setAttribute("type", "button");
+      button.setAttribute("aria-pressed", "false");
+      button.addEventListener("click", () => {
+        const filterKey = button.dataset.filter;
+        setActiveResultFilter(gender, filterKey);
+      });
     });
-
-    // Update frosh-soph table with all frosh-soph athletes
-    updateFroshSophTable(gender, genderResults, false);
   });
 
-  ["boys", "girls"].forEach(async (gender) => {
-    results.scores[gender] = Object.fromEntries(
-      Object.entries(results.scores[gender]).sort((a, b) => a[1] - b[1])
-    );
-    const scoreTable = document.querySelector(`#${gender} > .scoreTable`);
-    scoreTable.innerHTML = "";
-    for (var teamId in results.scores[gender]) {
-      const teamScore =
-        results.scores[gender][teamId] !== 0
-          ? results.scores[gender][teamId]
-          : "DNP";
-      // Use stored team name if available, otherwise fetch it
-      const teamName = results.teamNames && results.teamNames[teamId] 
-        ? results.teamNames[teamId]
-        : null;
-      
-      if (teamName) {
-        const teamRow = document.createElement("tr");
-        teamRow.innerHTML = `
-                    <td>${teamName}</td>
-                    <td>${teamScore}</td>
-                `;
-        scoreTable.appendChild(teamRow);
-      } else {
-        try {
-          const name = (
-            await athleticWrapper.crosscountry.team.GetTeamCore(teamId)
-          )["team"]["Name"];
-          const teamRow = document.createElement("tr");
-          teamRow.innerHTML = `
-                      <td>${name}</td>
-                      <td>${teamScore}</td>
-                  `;
-          scoreTable.appendChild(teamRow);
-        } catch (error) {
-          console.error("Error getting team name for", teamId, error);
-          const teamRow = document.createElement("tr");
-          teamRow.innerHTML = `
-                      <td>Team ${teamId}</td>
-                      <td>${teamScore}</td>
-                  `;
-          scoreTable.appendChild(teamRow);
-        }
-      }
+  filterButtonsInitialized = true;
+}
+
+function setActiveResultFilter(gender, filterKey) {
+  if (!window.fullResults || !window.fullResults.results) {
+    return;
+  }
+
+  const normalizedKey = RESULT_FILTERS[filterKey] ? filterKey : DEFAULT_RESULT_FILTER;
+  window.fullResults.activeFilters = window.fullResults.activeFilters || {};
+  window.fullResults.activeFilters[gender] = normalizedKey;
+
+  renderFilteredResults(gender, normalizedKey);
+  updateFilterButtonStates(gender, normalizedKey);
+  updateFilterLabel(gender, normalizedKey);
+}
+
+function renderFilteredResults(gender, filterKey) {
+  if (!window.fullResults || !window.fullResults.results) {
+    return;
+  }
+
+  const teamNames = window.fullResults.teamNames || {};
+  const athletes = getFilteredAthletes(gender, filterKey);
+
+  renderPlacementTable(gender, athletes, teamNames);
+  renderScoreTable(gender, athletes, teamNames);
+}
+
+function getFilteredAthletes(gender, filterKey) {
+  const baseResults = window.fullResults?.results?.[gender] || [];
+  const filterDefinition = RESULT_FILTERS[filterKey] || RESULT_FILTERS[DEFAULT_RESULT_FILTER];
+  return baseResults.filter(filterDefinition.predicate);
+}
+
+function renderPlacementTable(gender, athletes, teamNames) {
+  const table = document.querySelector(`#${gender} .placementTable`);
+  if (!table) {
+    return;
+  }
+  const body = table.querySelector("tbody");
+  if (!body) {
+    return;
+  }
+
+  body.innerHTML = "";
+
+  if (!athletes.length) {
+    const row = document.createElement("tr");
+    const cell = document.createElement("td");
+    cell.colSpan = 5;
+    cell.textContent = "No athletes match this filter.";
+    row.appendChild(cell);
+    body.appendChild(row);
+    return;
+  }
+
+  athletes.forEach((athlete, index) => {
+    const row = document.createElement("tr");
+    const teamName = teamNames[athlete.team] || athlete.team;
+    row.innerHTML = `
+      <td>${index + 1}</td>
+      <td>${athlete.grade || ""}</td>
+      <td>${athlete.name}</td>
+      <td>${timeInSecondsToMMSSMS(athlete.time)}</td>
+      <td>${teamName}</td>
+    `;
+    body.appendChild(row);
+  });
+}
+
+function renderScoreTable(gender, athletes, teamNames) {
+  const table = document.querySelector(`#${gender} .scoreTable`);
+  if (!table) {
+    return;
+  }
+  const body = table.querySelector("tbody");
+  if (!body) {
+    return;
+  }
+
+  body.innerHTML = "";
+
+  const initialTeamIds = window.fullResults?.teamIds || [];
+  const { teamScores, finishCounts } = calculateTeamScores(athletes, initialTeamIds);
+  const entries = Object.entries(teamScores);
+
+  if (!entries.length) {
+    const row = document.createElement("tr");
+    const cell = document.createElement("td");
+    cell.colSpan = 3;
+    cell.textContent = "No team scores available for this filter.";
+    row.appendChild(cell);
+    body.appendChild(row);
+    return;
+  }
+
+  const sorted = entries.sort((a, b) => {
+    const scoreA = a[1] === 0 ? Number.POSITIVE_INFINITY : a[1];
+    const scoreB = b[1] === 0 ? Number.POSITIVE_INFINITY : b[1];
+    if (scoreA === scoreB) {
+      const nameA = teamNames[a[0]] || a[0];
+      const nameB = teamNames[b[0]] || b[0];
+      return nameA.localeCompare(nameB);
+    }
+    return scoreA - scoreB;
+  });
+
+  sorted.forEach(([teamId, rawScore], index) => {
+    const finishCount = finishCounts[teamId] || 0;
+    const isDnp = finishCount < 5;
+    const teamScoreDisplay = isDnp ? "DNP" : rawScore;
+    const rankDisplay = isDnp ? "\u2014" : index + 1;
+    const teamName = teamNames[teamId] || `Team ${teamId}`;
+
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${rankDisplay}</td>
+      <td>${teamName}</td>
+      <td>${teamScoreDisplay}</td>
+    `;
+    body.appendChild(row);
+  });
+}
+
+function calculateTeamScores(athletes, initialTeamIds) {
+  const finishCounts = {};
+  const teamScores = {};
+  const teamIds = new Set(initialTeamIds || []);
+
+  athletes.forEach((athlete) => {
+    if (athlete?.team) {
+      teamIds.add(athlete.team);
+    }
+  });
+
+  teamIds.forEach((teamId) => {
+    finishCounts[teamId] = 0;
+    teamScores[teamId] = 0;
+  });
+
+  athletes.forEach((athlete, index) => {
+    const teamId = athlete.team;
+    if (!teamId) {
+      return;
+    }
+    finishCounts[teamId] = (finishCounts[teamId] || 0) + 1;
+    if (finishCounts[teamId] <= 5) {
+      teamScores[teamId] = (teamScores[teamId] || 0) + (index + 1);
+    }
+  });
+
+  Object.keys(finishCounts).forEach((teamId) => {
+    if ((finishCounts[teamId] || 0) < 5) {
+      teamScores[teamId] = 0;
+    }
+  });
+
+  return { teamScores, finishCounts };
+}
+
+function updateFilterButtonStates(gender, activeFilter) {
+  const container = document.querySelector(`.result-filter-buttons[data-gender="${gender}"]`);
+  if (!container) {
+    return;
+  }
+
+  container.querySelectorAll(".result-filter-button").forEach((button) => {
+    const isActive = button.dataset.filter === activeFilter;
+    if (isActive) {
+      button.classList.remove("is-light");
+      button.setAttribute("aria-pressed", "true");
+    } else {
+      button.classList.add("is-light");
+      button.setAttribute("aria-pressed", "false");
     }
   });
 }
 
-function updateFroshSophTable(gender, allAthletes, excludeTeamTop7 = false) {
-  const resultsDiv = document.getElementById("resultsDiv");
-  
-  // Always use unfiltered athletes if available
-  const athletesToUse = window.fullResults && window.fullResults.allAthletesUnfiltered
-    ? window.fullResults.allAthletesUnfiltered[gender]
-    : allAthletes;
-  
-  let froshSophAthletes = athletesToUse.filter((athlete) => {
-    const grade = parseInt(athlete.grade);
-    return grade === 9 || grade === 10;
-  });
-
-  // If excludeTeamTop7 is true, remove frosh-soph athletes who are in their team's top 7
-  if (excludeTeamTop7 && window.fullResults.teamTop7) {
-    const teamTop7Set = window.fullResults.teamTop7[gender];
-    froshSophAthletes = froshSophAthletes.filter((athlete) => {
-      const athleteKey = `${athlete.name}-${athlete.team}`;
-      const teamTopSevenForThisTeam = teamTop7Set[athlete.team];
-      return (
-        !teamTopSevenForThisTeam || !teamTopSevenForThisTeam.has(athleteKey)
-      );
-    });
+function updateFilterLabel(gender, filterKey) {
+  const label = document.querySelector(`.current-filter-label[data-gender="${gender}"]`);
+  if (!label) {
+    return;
   }
-  
-  // Sort by time
-  froshSophAthletes.sort((a, b) => a.time - b.time);
+  label.textContent = `Showing: ${getFilterLabel(filterKey)}`;
+}
 
-  // Update the placement table
-  const placementTable = resultsDiv.querySelector(
-    `#${gender} .placementTableFroshSoph`
-  );
-  placementTable.innerHTML = "";
-  froshSophAthletes.forEach((athlete, i) => {
-    const row = document.createElement("tr");
-    row.innerHTML = `
-            <td>${i + 1}</td>
-            <td>${athlete.grade}</td>
-            <td>${athlete.name}</td>
-            <td>${timeInSecondsToMMSSMS(athlete.time)}</td>
-            <td>${athlete.team}</td>
-        `;
-    placementTable.appendChild(row);
-  });
-
-  // Calculate scores for frosh-soph athletes
-  const teamScores = {};
-  for (var key in window.fullResults.scores[gender]) {
-    teamScores[key] = 0;
-  }
-
-  const scoringStuff = {};
-  for (var i = 0; i < froshSophAthletes.length; i++) {
-    const team = froshSophAthletes[i].team;
-    if (!scoringStuff[team]) scoringStuff[team] = [];
-    scoringStuff[team].push(froshSophAthletes[i]);
-    if (scoringStuff[team].length <= 5) {
-      teamScores[team] += i + 1;
-    }
-  }
-
-  // Update the score table
-  const scoreTable = resultsDiv.querySelector(
-    `#${gender} > .scoreTableFroshSoph`
-  );
-  scoreTable.innerHTML = "";
-
-  const sortedScores = Object.entries(teamScores).sort((a, b) => {
-    if (a[1] === 0) return 1;
-    if (b[1] === 0) return -1;
-    return a[1] - b[1];
-  });
-
-  sortedScores.forEach(async ([teamId, teamScore]) => {
-    const score = teamScore !== 0 ? teamScore : "DNP";
-    // Use stored team name if available, otherwise fetch it
-    const teamName = window.fullResults.teamNames && window.fullResults.teamNames[teamId]
-      ? window.fullResults.teamNames[teamId]
-      : null;
-    
-    if (teamName) {
-      const teamRow = document.createElement("tr");
-      teamRow.innerHTML = `
-                <td>${teamName}</td>
-                <td>${score}</td>
-            `;
-      scoreTable.appendChild(teamRow);
-    } else {
-      try {
-        const name = (
-          await athleticWrapper.crosscountry.team.GetTeamCore(teamId)
-        )["team"]["Name"];
-        const teamRow = document.createElement("tr");
-        teamRow.innerHTML = `
-                  <td>${name}</td>
-                  <td>${score}</td>
-              `;
-        scoreTable.appendChild(teamRow);
-      } catch (error) {
-        console.error("Error getting team name for", teamId, error);
-        const teamRow = document.createElement("tr");
-        teamRow.innerHTML = `
-                  <td>Team ${teamId}</td>
-                  <td>${score}</td>
-              `;
-        scoreTable.appendChild(teamRow);
-      }
-    }
-  });
+function getFilterLabel(filterKey) {
+  return RESULT_FILTERS[filterKey]?.label || RESULT_FILTERS[DEFAULT_RESULT_FILTER].label;
 }
 
 function timeInSecondsToMMSSMS(time) {
@@ -450,97 +640,6 @@ function timeInSecondsToMMSSMS(time) {
   const milliseconds = Math.floor((time - Math.floor(time)) * 1000);
   return `${minutes}:${seconds}.${milliseconds}`;
 }
-
-function addAutocomplete(inputElement) {
-  inputElement.addEventListener("input", async function () {
-    const query = this.value;
-    // Find the dropdown container
-    const control = inputElement.closest(".control");
-    const suggestionsContainer = control ? control.querySelector(".dropdown-content") : null;
-    
-    if (query.length < 3) {
-      if (suggestionsContainer) {
-        suggestionsContainer.innerHTML = "";
-      }
-      return;
-    }
-    const suggestions = await fetchTeamSuggestions(query);
-    displaySuggestions(suggestions, inputElement);
-  });
-}
-
-function displaySuggestions(suggestions, inputElement) {
-  // Find the dropdown container (next sibling of the control div containing the input)
-  let suggestionsContainer = inputElement.nextElementSibling;
-  
-  // If no direct sibling, look for it in the same control or parent
-  if (!suggestionsContainer || !suggestionsContainer.classList.contains("dropdown-content")) {
-    const control = inputElement.closest(".control");
-    suggestionsContainer = control ? control.querySelector(".dropdown-content") : null;
-  }
-  
-  if (!suggestionsContainer) {
-    return; // Fallback if container not found
-  }
-  
-  suggestionsContainer.innerHTML = "";
-  suggestions.forEach((team) => {
-    const suggestionItem = document.createElement("div");
-    suggestionItem.classList.add("dropdown-item");
-
-    suggestionItem.innerHTML =
-      team.textsuggest + " <small>" + team.subtext + "</small>";
-
-    suggestionItem.addEventListener("click", () => {
-      // Set the consolidated input field value
-      inputElement.value = team.textsuggest + " " + team.subtext;
-
-      // Find the teamId input in the same field/has-addons container
-      const fieldContainer =
-        inputElement.closest(".field.has-addons") ||
-        inputElement.closest(".column");
-      const teamIdInput = fieldContainer.querySelector('input[name="teamId"]');
-      if (teamIdInput) {
-        teamIdInput.value = team.id_db;
-      }
-      suggestionsContainer.innerHTML = "";
-    });
-    suggestionsContainer.appendChild(suggestionItem);
-  });
-}
-
-// Initialize autocomplete for the initial input field
-addAutocomplete(document.getElementById("autocompleteInput"));
-
-$("#rowAdder").click(function () {
-  const newRowAdd = `
-        <div class="column px-0">
-            <div class="field has-addons">
-                <div class="control">
-                    <button class="button is-danger" id="DeleteRow" type="button">
-                        <i class="bi bi-trash"></i>
-                        Delete
-                    </button>
-                </div>
-                <div class="control is-expanded">
-                    <input type="text" class="input autocompleteInput" placeholder="Search for a team" name="teamName">
-                    <div class="dropdown-content"></div>
-                </div>
-                <div class="control">
-                    <input type="text" class="input" name="teamId" placeholder="Team ID" hidden>
-                </div>
-            </div>
-        </div>`;
-  $("#listOfIDs").append(newRowAdd);
-
-  // Add autocomplete to the new input field
-  const newInput = $("#listOfIDs .column:last-child .autocompleteInput")[0];
-  addAutocomplete(newInput);
-});
-
-$("body").on("click", "#DeleteRow", function () {
-  $(this).closest(".column").remove();
-});
 
 window.onload = function () {
   chrome.runtime.sendMessage(
@@ -551,7 +650,19 @@ window.onload = function () {
       const url = new URL(response.tab.url);
       const [empty, type, teamId, sport, level] = url.pathname.split("/");
       if (type !== "team" || sport !== "cross-country") return;
-      document.getElementById("firstTeam").value = teamId;
+      try {
+        const teamCore = await makeApiCall("GetTeamCore", teamId);
+        const teamName = teamCore?.team?.Name || `Team ${teamId}`;
+        if (teamSelector && teamSelector.getTeams().length === 0) {
+          teamSelector.addTeam({ id: teamId, name: teamName, label: teamName });
+        }
+      } catch (error) {
+        console.warn("Unable to preload current team", error);
+        if (teamSelector && teamSelector.getTeams().length === 0) {
+          const fallbackName = `Team ${teamId}`;
+          teamSelector.addTeam({ id: teamId, name: fallbackName, label: fallbackName });
+        }
+      }
     }
   );
 };
@@ -559,9 +670,16 @@ window.onload = function () {
 document
   .getElementById("distance")
   .addEventListener("change", async function () {
+    if (!teamSelector) {
+      return;
+    }
+    const selectedTeams = teamSelector.getTeams();
+    if (selectedTeams.length === 0) {
+      return;
+    }
+
     const selectedCourse = this.value;
-    const formData = new FormData(document.getElementById("teamsInput"));
-    const teamIds = formData.getAll("teamId");
+    const teamIds = selectedTeams.map((team) => team.id);
     teamsData = {};
     await Promise.all(
       teamIds.map(async (teamId) => {
@@ -569,104 +687,139 @@ document
       })
     );
     const results = await simulateMeet(teamsData, selectedCourse);
+    results.teamNames = { ...teamNameMapGlobal };
     updateResults(results);
   });
 
-document
-  .getElementById("autocompleteInput")
-  .addEventListener("input", async function () {
-    const query = this.value;
-    const control = this.closest(".control");
-    const suggestionsContainer = control ? control.querySelector(".dropdown-content") : null;
-    
-    if (query.length < 3) {
-      if (suggestionsContainer) {
-        suggestionsContainer.innerHTML = "";
-      }
-      return;
-    }
-    const suggestions = await fetchTeamSuggestions(query);
-    displaySuggestions(suggestions, this);
-  });
-
-async function fetchTeamSuggestions(query) {
-  try {
-    // Replace with actual API call to fetch team suggestions
-    const response = await window.athleticWrapper.search.AutoComplete(query);
-    return response.response.docs.filter((doc) => doc.type === "Team");
-  } catch (error) {
-    console.error("Error fetching team suggestions:", error);
-    return [];
+function printResults() {
+  console.log("Printing meet results");
+  const resultsDiv = document.getElementById("resultsDiv");
+  if (!resultsDiv) {
+    alert("No results to print. Please simulate a meet first.");
+    return;
   }
+
+  const printWindow = window.open("", "_blank");
+  if (!printWindow) {
+    alert("Please allow pop-ups for printing");
+    return;
+  }
+
+  // Deep clone the results div
+  const contentClone = resultsDiv.cloneNode(true);
+
+  // Wrap content in two-column layout
+  const wrapper = document.createElement('div');
+  wrapper.className = 'results-columns';
+  wrapper.appendChild(contentClone);
+
+  const styles = `
+    <style>
+      body { 
+        font-family: Arial, sans-serif; 
+        padding: 20px; 
+        background-color: white;
+      }
+      table { 
+        width: 100%; 
+        border-collapse: collapse; 
+        margin-bottom: 1.5em; 
+        page-break-inside: avoid;
+      }
+      th, td { 
+        border: 1px solid #333; 
+        padding: 8px;
+        text-align: left; 
+        font-size: 11px;
+      }
+      th {
+        background-color: #f0f0f0;
+        font-weight: bold;
+      }
+      h2 { 
+        margin-top: 1.5em;
+        margin-bottom: 0.5em;
+        font-size: 18px;
+        page-break-after: avoid;
+        break-inside: avoid;
+      }
+      h3 { 
+        margin-top: 1em;
+        margin-bottom: 0.5em;
+        font-size: 14px;
+        page-break-after: avoid;
+        break-inside: avoid;
+      }
+      .subtitle {
+        page-break-after: avoid;
+        break-inside: avoid;
+      }
+      .mb-3 {
+        display: none;
+      }
+      .results-columns {
+        column-count: 2;
+        column-gap: 20px;
+        width: 100%;
+      }
+      .results-columns > * {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        margin-bottom: 1.25rem;
+        display: block;
+      }
+      .results-columns table {
+        width: 100%;
+      }
+      h1 {
+        text-align: center;
+        margin-bottom: 1em;
+        break-after: avoid;
+      }
+      .result-filter-buttons {
+        display: none !important;
+      }
+      @media print {
+        body { 
+          padding: 0; 
+          margin: 0; 
+        }
+        table { 
+          page-break-inside: avoid; 
+        }
+        tr { 
+          page-break-inside: avoid; 
+        }
+      }
+    </style>
+  `;
+
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Cross Country Meet Results</title>
+        ${styles}
+      </head>
+      <body>
+        <h1>Cross Country Meet Results</h1>
+        ${wrapper.outerHTML}
+      </body>
+    </html>
+  `);
+
+  printWindow.document.close();
+
+  // Wait for content to load before printing
+  printWindow.onload = () => {
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+    }, 500);
+  };
 }
 
+// Add event listener for print button
 document
-  .getElementById("listOfIDs")
-  .addEventListener("paste", function (event) {
-    event.preventDefault();
-
-    const paste = event.clipboardData.getData("text");
-
-    const lines = paste.split("\n");
-
-    const input = event.target;
-
-    // get the input element's position in its parent
-    const index = Array.from(input.parentNode.children).indexOf(input);
-
-    lines.forEach((line, i) => {
-      const newRowAdd = `
-            <div class="column">
-                <div class="field has-addons">
-                    <div class="control">
-                        <button class="button is-danger" id="DeleteRow" type="button">
-                            <i class="bi bi-trash"></i>
-                            Delete
-                        </button>
-                    </div>
-                    <div class="control">
-                        <input type="text" class="input" name="teamId" value="${line}">
-                    </div>
-                </div>
-            </div>`;
-      if (i === 0 && input.value === "") {
-        $(input).val(line);
-      } else {
-        $(input).closest(".column").after(newRowAdd);
-      }
-    });
-  });
-
-// Event listeners for Remove Team Top 7 buttons
-document
-  .getElementById("boysRemoveTopSeven")
-  .addEventListener("click", function () {
-    if (window.fullResults) {
-      updateFroshSophTable("boys", window.fullResults.results.boys, true);
-    }
-  });
-
-document
-  .getElementById("girlsRemoveTopSeven")
-  .addEventListener("click", function () {
-    if (window.fullResults) {
-      updateFroshSophTable("girls", window.fullResults.results.girls, true);
-    }
-  });
-
-// Event listeners for Refresh buttons
-document
-  .getElementById("boysRefreshFroshSoph")
-  .addEventListener("click", function () {
-    if (window.fullResults) {
-      updateFroshSophTable("boys", window.fullResults.results.boys, false);
-    }
-  });
-
-document
-  .getElementById("girlsRefreshFroshSoph")
-  .addEventListener("click", function () {
-    if (window.fullResults) {
-      updateFroshSophTable("girls", window.fullResults.results.girls, false);
-    }
-  });
+  .getElementById("printResults")
+  .addEventListener("click", printResults);

@@ -15,9 +15,6 @@ function buttonClick() {
         if (type === "athlete" && sport === "cross-country" && athleteId) {
             window.athleticWrapper.track.athlete.GetAthleteBioData(athleteId, "xc").then(async (data) => {
                 console.log(data);
-                function getMiles(meters) {
-                    return meters * 0.000621371192;
-                }
 
                 resultsOrganized = {};
                 await data.resultsXC.map(result => {
@@ -121,7 +118,7 @@ function buttonClick() {
                 });
 
                 dropDown.children[0].selected = true;
-                
+
                 var event = new Event('change');
                 dropDown.dispatchEvent(event);
             });

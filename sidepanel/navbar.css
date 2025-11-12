@@ -1,0 +1,99 @@
+/* Navbar styling */
+.navbar {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+  padding: 0.75rem 1rem;
+  color: white !important;
+}
+
+.navbar-brand strong {
+  color: white !important;
+}
+
+.navbar-start {
+  display: flex;
+  align-items: stretch;
+}
+
+.navbar-item {
+  display: flex;
+  align-items: center;
+  color: white !important;
+}
+
+.navbar-link {
+  color: white !important;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.navbar-link::after {
+  border-color: white !important;
+}
+
+.navbar-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white !important;
+}
+
+.navbar-item.has-dropdown > .navbar-dropdown {
+  display: none;
+}
+
+.navbar-dropdown {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  min-width: 220px;
+  z-index: 20;
+}
+
+.navbar-dropdown .navbar-item {
+  color: #2a2a2a !important;
+  padding: 0.75rem 1rem;
+  display: block;
+  width: 100%;
+  text-align: left;
+}
+
+.navbar-dropdown .navbar-item:hover {
+  background-color: rgba(0, 0, 0, 0.08);
+  color: #111111 !important;
+}
+
+.navbar-dropdown a:not(.button) {
+  color: #2a2a2a !important;
+}
+
+.navbar-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white !important;
+}
+
+.navbar-divider {
+  background-color: rgba(0, 0, 0, 0.12);
+  margin: 0.5rem 0;
+  height: 1px;
+  border: none;
+}
+
+.navbar-item.has-dropdown.is-active > .navbar-dropdown,
+.navbar-item.has-dropdown:hover > .navbar-dropdown {
+  display: block;
+}
+
+/* Adjust body padding to account for sticky navbar */
+body {
+  padding-top: 0;
+}
+
+.section {
+  padding-top: 1.5rem;
+}

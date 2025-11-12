@@ -56,6 +56,17 @@ chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {
             });
             break;
         }
+      case "cross-country":
+      case "track-and-field-outdoor":
+      case "track-and-field-indoor":
+        if (url.pathname.split("/")[2] === "division") {
+          await chrome.sidePanel.setOptions({
+            tabId,
+            path: "sidepanel/division/index.html",
+            enabled: true,
+          });
+        }
+        break;
       case "team":
         // pathname = /team/teamId/cross-country/seasonId
         if (url.pathname.split("/")[3] === "cross-country") {
@@ -73,6 +84,13 @@ chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {
             enabled: true,
           });
         }
+        break;
+      case "division":
+        await chrome.sidePanel.setOptions({
+          tabId,
+          path: "sidepanel/division/index.html",
+          enabled: true,
+        });
         break;
       case "athlete":
         // pathname = /athlete/athleteId/cross-country/level
@@ -119,7 +137,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "makeApiRequest") {
     fetch(request.url, request.options)
       .then(response => {
-        if (request.responseType === 'text') {
+        if (request.responseType === 'text' || request.responseType === 'text/html') {
           return response.text();
         }
         return response.json();
