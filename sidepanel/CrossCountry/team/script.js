@@ -127,13 +127,25 @@ async function simulateMeet(teamsData, selectedCourse = null) {
     for (var key in teamsData) {
       teamScores[key] = 0;
     }
+    // Build scoring lists and compute team scores for varsity.
+    // For varsity calculations we only consider athletes who are in the
+    // team's top 7. Non-top7 athletes are skipped when assigning varsity
+    // scoring positions (so positions/counts are based only on top7 finishers).
     const scoringStuff = {};
-    for (var i = 0; i < allAthletesSorted.length; i++) {
-      const team = allAthletesSorted[i].team;
+    let varsityPosition = 0; // positions among athletes eligible for varsity scoring
+    for (let i = 0; i < allAthletesSorted.length; i++) {
+      const athlete = allAthletesSorted[i];
+      // Skip athletes who are not in their team's top 7 for varsity scoring
+      if (!athlete.isTop7) {
+        continue;
+      }
+      varsityPosition += 1;
+      const team = athlete.team;
       if (!scoringStuff[team]) scoringStuff[team] = [];
-      scoringStuff[team].push(allAthletesSorted[i]);
+      scoringStuff[team].push(athlete);
+      // Only the first 5 eligible (top7) from a team score
       if (scoringStuff[team].length <= 5) {
-        teamScores[team] += i + 1;
+        teamScores[team] += varsityPosition;
       }
     }
     scores[gender] = teamScores;
@@ -279,6 +291,12 @@ var teamNameMapGlobal = {};
 var teamSelector = null;
 var teamListManager = null;
 
+// UI settings defaults
+const DEFAULT_SETTINGS = {
+  showTop7Only: false,
+  enableTop7Scoring: true,
+};
+
 const DEFAULT_RESULT_FILTER = "overall";
 const RESULT_FILTERS = {
   overall: {
@@ -414,6 +432,11 @@ function updateResults(results) {
     teamNames,
     activeFilters: { ...previousFilters },
     teamIds: Object.keys(teamNames),
+    settings: {
+      // preserve existing settings if present, otherwise use defaults
+      ...(window.fullResults?.settings || {}),
+      ...DEFAULT_SETTINGS,
+    },
   };
 
   initializeResultFilterButtons();
@@ -422,6 +445,32 @@ function updateResults(results) {
     const desiredFilter = window.fullResults.activeFilters[gender] || DEFAULT_RESULT_FILTER;
     setActiveResultFilter(gender, desiredFilter);
   });
+
+  // initialize UI toggles if present
+  tryInitUiToggles();
+}
+
+function tryInitUiToggles() {
+  const showTop7El = document.getElementById("showTop7Only");
+  const enableTop7El = document.getElementById("enableTop7Scoring");
+  if (!showTop7El || !enableTop7El) return;
+
+  // Set initial states from current settings
+  showTop7El.checked = Boolean(window.fullResults?.settings?.showTop7Only);
+  enableTop7El.checked = Boolean(window.fullResults?.settings?.enableTop7Scoring);
+
+  // Wire change handlers
+  showTop7El.onchange = () => {
+    window.fullResults.settings.showTop7Only = showTop7El.checked;
+    // Re-render both genders
+    ["boys", "girls"].forEach((g) => renderFilteredResults(g, window.fullResults.activeFilters[g] || DEFAULT_RESULT_FILTER));
+  };
+
+  enableTop7El.onchange = () => {
+    window.fullResults.settings.enableTop7Scoring = enableTop7El.checked;
+    // Re-render both genders (score table depends on this)
+    ["boys", "girls"].forEach((g) => renderFilteredResults(g, window.fullResults.activeFilters[g] || DEFAULT_RESULT_FILTER));
+  };
 }
 
 function initializeResultFilterButtons() {
@@ -475,7 +524,11 @@ function renderFilteredResults(gender, filterKey) {
 function getFilteredAthletes(gender, filterKey) {
   const baseResults = window.fullResults?.results?.[gender] || [];
   const filterDefinition = RESULT_FILTERS[filterKey] || RESULT_FILTERS[DEFAULT_RESULT_FILTER];
-  return baseResults.filter(filterDefinition.predicate);
+  let list = baseResults.filter(filterDefinition.predicate);
+  if (window.fullResults?.settings?.showTop7Only) {
+    list = list.filter((athlete) => athlete && athlete.isTop7);
+  }
+  return list;
 }
 
 function renderPlacementTable(gender, athletes, teamNames) {
@@ -527,7 +580,8 @@ function renderScoreTable(gender, athletes, teamNames) {
   body.innerHTML = "";
 
   const initialTeamIds = window.fullResults?.teamIds || [];
-  const { teamScores, finishCounts } = calculateTeamScores(athletes, initialTeamIds);
+  const useTop7Scoring = Boolean(window.fullResults?.settings?.enableTop7Scoring);
+  const { teamScores, finishCounts } = calculateTeamScores(athletes, initialTeamIds, { useTop7Scoring });
   const entries = Object.entries(teamScores);
 
   if (!entries.length) {
@@ -569,6 +623,11 @@ function renderScoreTable(gender, athletes, teamNames) {
 }
 
 function calculateTeamScores(athletes, initialTeamIds) {
+  // Backwards compatible signature: calculateTeamScores(athletes, initialTeamIds, options)
+  const args = Array.from(arguments);
+  const options = (args[2] && typeof args[2] === 'object') ? args[2] : {};
+  const useTop7Scoring = Boolean(options.useTop7Scoring);
+
   const finishCounts = {};
   const teamScores = {};
   const teamIds = new Set(initialTeamIds || []);
@@ -584,22 +643,50 @@ function calculateTeamScores(athletes, initialTeamIds) {
     teamScores[teamId] = 0;
   });
 
-  athletes.forEach((athlete, index) => {
-    const teamId = athlete.team;
-    if (!teamId) {
-      return;
+  if (useTop7Scoring) {
+    // Varsity/top7 scoring: positions are counted only among athletes who are top7
+    // and only the first 5 eligible from each team count toward the team score.
+    const scoringStuff = {};
+    let varsityPosition = 0;
+    for (let i = 0; i < athletes.length; i++) {
+      const athlete = athletes[i];
+      if (!athlete || !athlete.team) continue;
+      if (!athlete.isTop7) continue;
+      varsityPosition += 1;
+      const teamId = athlete.team;
+      scoringStuff[teamId] = scoringStuff[teamId] || [];
+      scoringStuff[teamId].push(athlete);
+      finishCounts[teamId] = (finishCounts[teamId] || 0) + 1;
+      if (scoringStuff[teamId].length <= 5) {
+        teamScores[teamId] = (teamScores[teamId] || 0) + varsityPosition;
+      }
     }
-    finishCounts[teamId] = (finishCounts[teamId] || 0) + 1;
-    if (finishCounts[teamId] <= 5) {
-      teamScores[teamId] = (teamScores[teamId] || 0) + (index + 1);
-    }
-  });
 
-  Object.keys(finishCounts).forEach((teamId) => {
-    if ((finishCounts[teamId] || 0) < 5) {
-      teamScores[teamId] = 0;
-    }
-  });
+    // Ensure DNP logic: teams with less than 5 eligible finishers get score 0
+    Object.keys(finishCounts).forEach((teamId) => {
+      if ((finishCounts[teamId] || 0) < 5) {
+        teamScores[teamId] = 0;
+      }
+    });
+  } else {
+    // Standard scoring: positions are the overall finish order (index + 1)
+    athletes.forEach((athlete, index) => {
+      const teamId = athlete.team;
+      if (!teamId) {
+        return;
+      }
+      finishCounts[teamId] = (finishCounts[teamId] || 0) + 1;
+      if (finishCounts[teamId] <= 5) {
+        teamScores[teamId] = (teamScores[teamId] || 0) + (index + 1);
+      }
+    });
+
+    Object.keys(finishCounts).forEach((teamId) => {
+      if ((finishCounts[teamId] || 0) < 5) {
+        teamScores[teamId] = 0;
+      }
+    });
+  }
 
   return { teamScores, finishCounts };
 }
@@ -719,6 +806,7 @@ function printResults() {
         font-family: Arial, sans-serif; 
         padding: 20px; 
         background-color: white;
+        break-after: avoid;
       }
       table { 
         width: 100%; 
