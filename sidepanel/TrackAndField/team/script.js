@@ -4,6 +4,31 @@ let nonDualTeamSelector = null;
 let dualTeamSelector = null;
 let nonDualListManager = null;
 let dualListManager = null;
+const RELAY_SPLIT_EVENT_TYPE_ID = 98;
+const DEFAULT_NON_DUAL_ATHLETES_PER_EVENT = 8;
+const DEFAULT_DUAL_ATHLETES_PER_EVENT = 5;
+
+function isRelaySplitPerformance(performance) {
+  const eventTypeId = performance?.EventTypeID ?? performance?.IDEventType;
+  return Number(eventTypeId) === RELAY_SPLIT_EVENT_TYPE_ID;
+}
+
+function getAthletesPerEventLimit(dual) {
+  const inputId = dual ? "dualAthletesPerEvent" : "nonDualAthletesPerEvent";
+  const fallback = dual
+    ? DEFAULT_DUAL_ATHLETES_PER_EVENT
+    : DEFAULT_NON_DUAL_ATHLETES_PER_EVENT;
+  const parsedValue = Number.parseInt(
+    document.getElementById(inputId)?.value,
+    10
+  );
+
+  if (!Number.isFinite(parsedValue) || parsedValue < 1) {
+    return fallback;
+  }
+
+  return parsedValue;
+}
 
 function openPage(pageName, elmnt, color) {
   var i, tabcontent, tablinks;
@@ -204,6 +229,9 @@ async function simulateMeet(teamIds, teamsData, dual) {
     };
     // Filter athletes by grade when adding them to events
     homeTeamEventRecords.forEach((record) => {
+      if (isRelaySplitPerformance(record)) {
+        return;
+      }
       if (!events[record.Gender][record.Event]) {
         events[record.Gender][record.Event] = [];
       }
@@ -214,6 +242,9 @@ async function simulateMeet(teamIds, teamsData, dual) {
     });
 
     opposingTeamEventRecords.forEach((record) => {
+      if (isRelaySplitPerformance(record)) {
+        return;
+      }
       if (!events[record.Gender][record.Event]) {
         events[record.Gender][record.Event] = [];
       }
@@ -226,13 +257,6 @@ async function simulateMeet(teamIds, teamsData, dual) {
     for (const gender in events) {
       for (const event in events[gender]) {
         events[gender][event].sort((a, b) => a.SortInt - b.SortInt);
-      }
-    }
-
-    // slice the arrays to only include the top 10
-    for (const gender in events) {
-      for (const event in events[gender]) {
-        events[gender][event] = events[gender][event].slice(0, 5);
       }
     }
 
@@ -255,6 +279,7 @@ async function simulateMeet(teamIds, teamsData, dual) {
       "300m Hurdles",
       "4x100 Relay",
       "4x400 Relay",
+      "4x800 Relay",
       "High Jump",
       "Pole Vault",
       "Long Jump",
@@ -274,6 +299,7 @@ async function simulateMeet(teamIds, teamsData, dual) {
       "300m Hurdles",
       "4x100 Relay",
       "4x400 Relay",
+      "4x800 Relay",
       "High Jump",
       "Pole Vault",
       "Long Jump",
@@ -410,6 +436,9 @@ async function simulateMeet(teamIds, teamsData, dual) {
     Object.values(teamsData).forEach((teamData) => {
       const school = teamData.preferences.IDSchool;
       teamData.eventRecords.forEach((record) => {
+        if (isRelaySplitPerformance(record)) {
+          return;
+        }
         if (!events[record.Gender][record.Event]) {
           events[record.Gender][record.Event] = [];
         }
@@ -437,6 +466,7 @@ async function simulateMeet(teamIds, teamsData, dual) {
       "300m Hurdles",
       "4x100 Relay",
       "4x400 Relay",
+      "4x800 Relay",
       "High Jump",
       "Pole Vault",
       "Long Jump",
@@ -456,6 +486,7 @@ async function simulateMeet(teamIds, teamsData, dual) {
       "300m Hurdles",
       "4x100 Relay",
       "4x400 Relay",
+      "4x800 Relay",
       "High Jump",
       "Pole Vault",
       "Long Jump",
@@ -580,12 +611,15 @@ async function updateResults(results, dual) {
   const resultsDiv = dual
     ? document.getElementById("resultsDiv")
     : document.getElementById("nonDualMeetResultsDiv");
+  const maxAthletesToShow = getAthletesPerEventLimit(dual);
   ["boys", "girls"].forEach(async (gender) => {
     let genderAbbr;
     if (gender == "boys") genderAbbr = "M";
     if (gender == "girls") genderAbbr = "F";
     const genderResults = placementResults[genderAbbr];
-    const table = resultsDiv.querySelector(`#${gender} .placementTable`);
+    const table = resultsDiv.querySelector(
+      `[data-gender="${gender}"] .placementTable`
+    );
 
     // Clear table contents
     table.innerHTML = `
@@ -623,7 +657,7 @@ async function updateResults(results, dual) {
         tbody.appendChild(headerRow);
 
         // Add event results
-        event.forEach((record, j) => {
+        event.slice(0, maxAthletesToShow).forEach((record, j) => {
           const row = document.createElement("tr");
           row.dataset.eventName = event[0].Event;
           row.dataset.gender = genderAbbr;
@@ -660,7 +694,9 @@ async function updateResults(results, dual) {
       results.points[genderAbbr] = Object.fromEntries(
         Object.entries(results.points[genderAbbr]).sort((a, b) => b[1] - a[1])
       );
-      const scoreTable = resultsDiv.querySelector(`#${gender} > .scoreTable`);
+      const scoreTable = resultsDiv.querySelector(
+        `[data-gender="${gender}"] > .scoreTable`
+      );
       scoreTable.innerHTML = "";
 
       const teamEntries = await Promise.all(

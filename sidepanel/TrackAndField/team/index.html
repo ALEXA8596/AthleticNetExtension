@@ -16,236 +16,216 @@
   <script src="../../common/accordion.js"></script>
 </head>
 
-<body>
-  <div class="container">
-    <section class="section">
-      <h1 class="p-3 title pageTitle">Track And Field Meet Simulator</h1>
-      <button name="nonDualMeetButton" id="defaultOpen" class="tablink" style="border-top-left-radius: 8px;">Invitational / Non-Dual Meet</button>
-      <button name="dualMeetButton" class="tablink" style="border-top-right-radius: 8px;">Dual Meet</button>
-      <div id="nonDualMeet" class="tabcontent" class="tablink" style="border-radius: 8px;">
-        <h1 class="p-3 subtitle has-text-black">Non - Dual Meet / Invitational / Sectional / League / State Meet Simulator</h1>
-        <p class="p-3 has-text-black">
-          This page simulates an invitational or multi-team meet between two or more teams.
-        </p>
-        <div class="container box">
-          <form id="teamsInputNonDualMeet">
-            <div id="nonDualTeamSelector" class="field">
-              <div class="team-tag-container"></div>
-              <div class="control">
-                <input type="text" class="input team-search" placeholder="Search for teams..." autocomplete="off">
-                <div class="suggestions-box"></div>
-              </div>
-            </div>
-            <button type="button" class="accordion subtitle is-5 has-text-white">Saved Team Lists</button>
-            <div class="panel">
-              <div class="field">
-                <label class="label has-text-white">Saved Lists</label>
-                <div class="control">
-                  <div class="select is-fullwidth">
-                    <select id="teamListSelectTrackNonDual">
-                      <option value="">Select saved list...</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div class="field">
-                <label class="label has-text-white">List Name</label>
-                <div class="control">
-                  <input type="text" id="teamListNameTrackNonDual" class="input" placeholder="Enter list name">
-                </div>
-              </div>
-              <div class="buttons">
-                <button type="button" id="loadTeamListTrackNonDual" class="button is-link is-light">Load</button>
-                <button type="button" id="saveTeamListTrackNonDual" class="button is-success is-light">Save as New</button>
-                <button type="button" id="updateTeamListTrackNonDual" class="button is-primary is-light">Update</button>
-                <button type="button" id="deleteTeamListTrackNonDual" class="button is-danger is-light">Delete</button>
-              </div>
-            </div>
-            <!-- Add Year Picker -->
-            <input id="nonDualMeetYear" type="number" min="2000" max="2099" step="1" value="2025" class="input is-primary mt-3" style="width: 25%" />
-
-
-            <div class="container mt-3">
-              <div class="field">
-                <label class="label has-text-white">Grade Filters:</label>
-                <div class="control">
-                  <label class="checkbox has-text-white">
-                    <input type="checkbox" class="grade-filter" value="9"> 9th
-                  </label>
-                  <label class="checkbox has-text-white">
-                    <input type="checkbox" class="grade-filter" value="10"> 10th
-                  </label>
-                  <label class="checkbox has-text-white">
-                    <input type="checkbox" class="grade-filter" value="11"> 11th
-                  </label>
-                  <label class="checkbox has-text-white">
-                    <input type="checkbox" class="grade-filter" value="12"> 12th
-                  </label>
-                </div>
-              </div>
-              <button type="submit" id="simulateButton" class="button is-primary">Simulate</button>
-              <button type="button" id="printNonDualMeet" class="button is-info">
-                <span class="icon">
-                  <span>&#x1F5A8;</span>
-                </span>
-                <span>Print Results</span>
-              </button>
-            </div>
-          </form>
-
-          <br>
-          <div id="nonDualMeetResultsDiv">
-            <div id="boys">
-              <table class="placementTable table is-striped is-fullwidth">
-              </table>
-
-              <table class="scoreTable table is-striped is-fullwidth">
-                <thead>
-                  <tr>
-                    <th>Team</th>
-                    <th>Score</th>
-                  </tr>
-                </thead>
-              </table>
-            </div>
-            <br>
-            <div id="girls">
-              <table class="placementTable table is-striped is-fullwidth">
-              </table>
-              <table class="scoreTable table is-striped is-fullwidth">
-                <thead>
-                  <tr>
-                    <th>Team</th>
-                    <th>Score</th>
-                  </tr>
-                </thead>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div id="dualMeet" class="tabcontent" style="border-radius: 8px;">
-        <h1 class="p-3 subtitle has-text-black">Dual Meet Simulator</h1>
-        <p class="p-3 has-text-black">
-          This page simulates a dual meet between two teams. (The team on the
-          current website, and the team provided)
-        </p>
-        <!-- Create a textbox using bulma for the opposing team's id -->
-        <div class="container box ">
-          <div class="columns">
-            <div class="column">
-              <form id="teamsInput">
-                <div id="dualTeamSelector" class="field">
-                  <div class="team-tag-container"></div>
-                  <div class="control">
-                    <input type="text" class="input team-search" placeholder="Search for teams..." autocomplete="off">
-                    <div class="suggestions-box"></div>
-                  </div>
-                </div>
-
-                <button type="button" class="accordion subtitle is-5 has-text-white">Saved Team Lists</button>
-                <div class="panel">
-                  <div class="field">
-                    <label class="label has-text-white">Saved Lists</label>
-                    <div class="control">
-                      <div class="select is-fullwidth">
-                        <select id="teamListSelectTrackDual">
-                          <option value="">Select saved list...</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="field">
-                    <label class="label has-text-white">List Name</label>
-                    <div class="control">
-                      <input type="text" id="teamListNameTrackDual" class="input" placeholder="Enter list name">
-                    </div>
-                  </div>
-                  <div class="buttons">
-                    <button type="button" id="loadTeamListTrackDual" class="button is-link is-light">Load</button>
-                    <button type="button" id="saveTeamListTrackDual" class="button is-success is-light">Save as New</button>
-                    <button type="button" id="updateTeamListTrackDual" class="button is-primary is-light">Update</button>
-                    <button type="button" id="deleteTeamListTrackDual" class="button is-danger is-light">Delete</button>
-                  </div>
-                </div>
-
-                <input id="dualMeetYear" type="number" min="2000" max="2099" step="1" value="2025" class="input is-primary mt-3" style="width: 25%" />
-
-                <div class="container mt-3">
-                  <div class="field">
-                    <label class="label has-text-white">Grade Filters:</label>
-                    <div class="control">
-                      <label class="checkbox has-text-white">
-                        <input type="checkbox" class="grade-filter" value="9"> 9th
-                      </label>
-                      <label class="checkbox has-text-white">
-                        <input type="checkbox" class="grade-filter" value="10"> 10th
-                      </label>
-                      <label class="checkbox has-text-white">
-                        <input type="checkbox" class="grade-filter" value="11"> 11th
-                      </label>
-                      <label class="checkbox has-text-white">
-                        <input type="checkbox" class="grade-filter" value="12"> 12th
-                      </label>
-                    </div>
-                  </div>
-                  <button type="submit" id="dualMeetSimulateButton" class="button is-primary">Simulate</button>
-                  <button type="button" id="printDualMeet" class="button is-info">
-                    <span class="icon">
-                      <span>&#x1F5A8;</span>
-                    </span>
-                    <span>Print Results</span>
-                  </button>
-                </div>
-              </form>
-            </div>
-            <div class="column">
-              <div class="container">
-                <div class="container box">
-                  <h4 class="title is-4 is-text-white">Analysis</h4>
-                  <p>To be implemented...</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <br>
-          <br>
-          <div id="resultsDiv">
-            <div id="boys">
-              <table class="placementTable table is-striped is-fullwidth is-narrow">
-              </table>
-              <table class="scoreTable table is-striped is-fullwidth">
-                <thead>
-                  <tr>
-                    <th>Team</th>
-                    <th>Score</th>
-                  </tr>
-                </thead>
-              </table>
-            </div>
-            <br>
-            <div id="girls">
-              <table class="placementTable table is-striped is-fullwidth py-2 px-3">
-              </table>
-              <table class="scoreTable table is-striped is-fullwidth">
-                <thead>
-                  <tr>
-                    <th>Team</th>
-                    <th>Score</th>
-                  </tr>
-                </thead>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <script src="../../common/teamSelector.js"></script>
-      <script src="script.js"></script>
-      <script src="../../common/accordion.js"></script>
-      <script src="../../../build/bundle.js"></script>
+<body class="page-tf-team">
+  <main class="app-shell">
+    <section class="page-hero">
+      <p class="page-kicker">Track And Field</p>
+      <h1 class="page-title">Team Meet Simulator</h1>
+      <p class="page-subtitle">
+        Simulate invitational and dual meet scoring using saved team lists and grade filters.
+      </p>
     </section>
-  </div>
+
+    <div class="tab-switch">
+      <button name="nonDualMeetButton" id="defaultOpen" class="tablink" type="button">Invitational / Non-Dual</button>
+      <button name="dualMeetButton" class="tablink" type="button">Dual Meet</button>
+    </div>
+
+    <section id="nonDualMeet" class="tabcontent">
+      <div class="panel-card">
+        <h2 class="section-heading">Invitational / Non-Dual Meet</h2>
+        <p class="hint-text">Use this mode for multi-team meets, invitationals, and championship simulations.</p>
+        <form id="teamsInputNonDualMeet" style="margin-top: 0.75rem;">
+          <div id="nonDualTeamSelector" class="field">
+            <label class="label">Teams</label>
+            <div class="team-tag-container"></div>
+            <div class="control">
+              <input type="text" class="input team-search" placeholder="Search for teams..." autocomplete="off" />
+              <div class="suggestions-box"></div>
+            </div>
+          </div>
+
+          <button type="button" class="accordion subtitle is-5">Saved Team Lists</button>
+          <div class="panel">
+            <div class="field">
+              <label class="label">Saved Lists</label>
+              <div class="control">
+                <div class="select is-fullwidth">
+                  <select id="teamListSelectTrackNonDual">
+                    <option value="">Select saved list...</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">List Name</label>
+              <div class="control">
+                <input type="text" id="teamListNameTrackNonDual" class="input" placeholder="Enter list name" />
+              </div>
+            </div>
+            <div class="buttons">
+              <button type="button" id="loadTeamListTrackNonDual" class="button is-link is-light">Load</button>
+              <button type="button" id="saveTeamListTrackNonDual" class="button is-success is-light">Save as New</button>
+              <button type="button" id="updateTeamListTrackNonDual" class="button is-primary is-light">Update</button>
+              <button type="button" id="deleteTeamListTrackNonDual" class="button is-danger is-light">Delete</button>
+            </div>
+          </div>
+
+          <div class="toolbar">
+            <label class="label" for="nonDualMeetYear" style="margin: 0;">Year</label>
+            <input id="nonDualMeetYear" type="number" min="2000" max="2099" step="1" value="2026" class="input is-primary" />
+            <label class="label" for="nonDualAthletesPerEvent" style="margin: 0;">Athletes Per Event</label>
+            <input id="nonDualAthletesPerEvent" type="number" min="1" max="50" step="1" value="8" class="input is-primary" />
+          </div>
+
+          <div class="field" style="margin-top: 0.7rem;">
+            <label class="label">Grade Filters</label>
+            <div class="grade-filter-group">
+              <label class="checkbox"><input type="checkbox" class="grade-filter" value="9" /> 9th</label>
+              <label class="checkbox"><input type="checkbox" class="grade-filter" value="10" /> 10th</label>
+              <label class="checkbox"><input type="checkbox" class="grade-filter" value="11" /> 11th</label>
+              <label class="checkbox"><input type="checkbox" class="grade-filter" value="12" /> 12th</label>
+            </div>
+          </div>
+
+          <div class="toolbar">
+            <button type="submit" id="simulateButton" class="button is-link">Simulate</button>
+            <button type="button" id="printNonDualMeet" class="button is-info is-light">Print Results</button>
+          </div>
+        </form>
+      </div>
+
+      <section id="nonDualMeetResultsDiv" class="results-stack">
+        <div class="results-card" data-gender="boys">
+          <table class="placementTable table is-striped is-fullwidth"></table>
+          <table class="scoreTable table is-striped is-fullwidth">
+            <thead>
+              <tr>
+                <th>Team</th>
+                <th>Score</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+        <div class="results-card" data-gender="girls">
+          <table class="placementTable table is-striped is-fullwidth"></table>
+          <table class="scoreTable table is-striped is-fullwidth">
+            <thead>
+              <tr>
+                <th>Team</th>
+                <th>Score</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </section>
+    </section>
+
+    <section id="dualMeet" class="tabcontent">
+      <div class="panel-card">
+        <h2 class="section-heading">Dual Meet</h2>
+        <p class="hint-text">Simulate head-to-head scoring between two teams.</p>
+        <div class="columns" style="margin-top: 0.5rem;">
+          <div class="column is-two-thirds">
+            <form id="teamsInput">
+              <div id="dualTeamSelector" class="field">
+                <label class="label">Teams</label>
+                <div class="team-tag-container"></div>
+                <div class="control">
+                  <input type="text" class="input team-search" placeholder="Search for teams..." autocomplete="off" />
+                  <div class="suggestions-box"></div>
+                </div>
+              </div>
+
+              <button type="button" class="accordion subtitle is-5">Saved Team Lists</button>
+              <div class="panel">
+                <div class="field">
+                  <label class="label">Saved Lists</label>
+                  <div class="control">
+                    <div class="select is-fullwidth">
+                      <select id="teamListSelectTrackDual">
+                        <option value="">Select saved list...</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="label">List Name</label>
+                  <div class="control">
+                    <input type="text" id="teamListNameTrackDual" class="input" placeholder="Enter list name" />
+                  </div>
+                </div>
+                <div class="buttons">
+                  <button type="button" id="loadTeamListTrackDual" class="button is-link is-light">Load</button>
+                  <button type="button" id="saveTeamListTrackDual" class="button is-success is-light">Save as New</button>
+                  <button type="button" id="updateTeamListTrackDual" class="button is-primary is-light">Update</button>
+                  <button type="button" id="deleteTeamListTrackDual" class="button is-danger is-light">Delete</button>
+                </div>
+              </div>
+
+              <div class="toolbar">
+                <label class="label" for="dualMeetYear" style="margin: 0;">Year</label>
+                <input id="dualMeetYear" type="number" min="2000" max="2099" step="1" value="2026" class="input is-primary" />
+                <label class="label" for="dualAthletesPerEvent" style="margin: 0;">Athletes Per Event</label>
+                <input id="dualAthletesPerEvent" type="number" min="1" max="50" step="1" value="5" class="input is-primary" />
+              </div>
+
+              <div class="field" style="margin-top: 0.7rem;">
+                <label class="label">Grade Filters</label>
+                <div class="grade-filter-group">
+                  <label class="checkbox"><input type="checkbox" class="grade-filter" value="9" /> 9th</label>
+                  <label class="checkbox"><input type="checkbox" class="grade-filter" value="10" /> 10th</label>
+                  <label class="checkbox"><input type="checkbox" class="grade-filter" value="11" /> 11th</label>
+                  <label class="checkbox"><input type="checkbox" class="grade-filter" value="12" /> 12th</label>
+                </div>
+              </div>
+
+              <div class="toolbar">
+                <button type="submit" id="dualMeetSimulateButton" class="button is-link">Simulate</button>
+                <button type="button" id="printDualMeet" class="button is-info is-light">Print Results</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="column">
+            <div class="analysis-placeholder">
+              <strong>Analysis</strong>
+              <p style="margin: 0.35rem 0 0;">Event-by-event analysis tools can be added here.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <section id="resultsDiv" class="results-stack">
+        <div class="results-card" data-gender="boys">
+          <table class="placementTable table is-striped is-fullwidth is-narrow"></table>
+          <table class="scoreTable table is-striped is-fullwidth">
+            <thead>
+              <tr>
+                <th>Team</th>
+                <th>Score</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+        <div class="results-card" data-gender="girls">
+          <table class="placementTable table is-striped is-fullwidth py-2 px-3"></table>
+          <table class="scoreTable table is-striped is-fullwidth">
+            <thead>
+              <tr>
+                <th>Team</th>
+                <th>Score</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </section>
+    </section>
+
+    <script src="../../common/teamSelector.js"></script>
+    <script src="../../../build/bundle.js"></script>
+    <script src="script.js"></script>
+  </main>
 </body>
 
 </html>

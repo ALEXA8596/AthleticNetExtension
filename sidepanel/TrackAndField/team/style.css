@@ -1,174 +1,93 @@
-.fira-sans-thin {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 100;
-  font-style: normal;
+@import url("../../style.css");
+
+.page-tf-team .tab-switch {
+  margin-bottom: 0.8rem;
 }
 
-.fira-sans-extralight {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 200;
-  font-style: normal;
+.page-tf-team .tabcontent {
+  border: 1px solid var(--line-300);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.84);
+  padding: 0.9rem;
 }
 
-.fira-sans-light {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 300;
-  font-style: normal;
+.page-tf-team #resultsDiv,
+.page-tf-team #nonDualMeetResultsDiv {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.9rem;
 }
 
-.fira-sans-regular {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 400;
-  font-style: normal;
+.page-tf-team #resultsDiv > [data-gender="boys"],
+.page-tf-team #resultsDiv > [data-gender="girls"],
+.page-tf-team #nonDualMeetResultsDiv > [data-gender="boys"],
+.page-tf-team #nonDualMeetResultsDiv > [data-gender="girls"] {
+  border: 1px solid var(--line-300);
+  border-radius: var(--radius-md);
+  background: var(--surface-0);
+  padding: 0.85rem;
 }
 
-.fira-sans-medium {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 500;
-  font-style: normal;
+.page-tf-team #nonDualMeetYear,
+.page-tf-team #dualMeetYear,
+.page-tf-team #nonDualAthletesPerEvent,
+.page-tf-team #dualAthletesPerEvent {
+  max-width: 150px;
 }
 
-.fira-sans-semibold {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 600;
-  font-style: normal;
+.page-tf-team .grade-filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 0.9rem;
 }
 
-.fira-sans-bold {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 700;
-  font-style: normal;
+.page-tf-team .analysis-placeholder {
+  border: 1px dashed var(--line-500);
+  border-radius: var(--radius-sm);
+  padding: 0.7rem;
+  color: var(--ink-700);
+  font-size: 0.84rem;
+  background: rgba(255, 255, 255, 0.7);
 }
 
-.fira-sans-extrabold {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 800;
-  font-style: normal;
+.page-tf-team .delete-performance {
+  padding: 0 !important;
+  width: 1rem !important;
+  height: 1rem !important;
+  min-height: 1rem;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 0.74rem;
 }
 
-.fira-sans-black {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 900;
-  font-style: normal;
+.page-tf-team .placementTable,
+.page-tf-team .scoreTable {
+  background: #ffffff;
 }
 
-.fira-sans-thin-italic {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 100;
-  font-style: italic;
+.page-tf-team .placementTable thead th,
+.page-tf-team .scoreTable thead th {
+  color: #1f2a37 !important;
+  background: #dde8f2 !important;
 }
 
-.fira-sans-extralight-italic {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 200;
-  font-style: italic;
+.page-tf-team .placementTable tbody tr:not(.event-header),
+.page-tf-team .scoreTable tbody tr {
+  background: #ffffff !important;
 }
 
-.fira-sans-light-italic {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 300;
-  font-style: italic;
+.page-tf-team .placementTable.table.is-striped tbody tr:not(.event-header):nth-child(even),
+.page-tf-team .scoreTable.table.is-striped tbody tr:nth-child(even) {
+  background: #eef5fb !important;
 }
 
-.fira-sans-regular-italic {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 400;
-  font-style: italic;
+.page-tf-team .placementTable td,
+.page-tf-team .scoreTable td {
+  color: #1f2a37 !important;
 }
 
-.fira-sans-medium-italic {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 500;
-  font-style: italic;
-}
-
-.fira-sans-semibold-italic {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 600;
-  font-style: italic;
-}
-
-.fira-sans-bold-italic {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 700;
-  font-style: italic;
-}
-
-.fira-sans-extrabold-italic {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 800;
-  font-style: italic;
-}
-
-.fira-sans-black-italic {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 900;
-  font-style: italic;
-}
-
-/* Style tab links */
-.tablink {
-  background-color: #555;
-  color: white;
-  float: left;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  padding: 14px 16px;
-  font-size: 17px;
-  width: 50%;
-}
-
-.tablink:hover {
-  background-color: #777;
-}
-
-/* Style the tab content (and add height:100% for full page content) */
-.tabcontent {
-  color: white;
-  display: none;
-  padding: 100px 20px;
-  height: 100%;
-  opacity: 0;
-  transition: opacity 0.5s ease-in-out;
-}
-
-.tabcontent.active {
-  display: block;
-  opacity: 1;
-}
-
-#nonDualMeet {background-color: lightcoral;}
-#dualMeet {background-color: lightgreen;}
-
-html {
-  background-color: lightblue;
-}
-
-.description {
-  color: black;
-}
-
-.pageTitle {
-  color: black;
-}
-
-.box {
-  background-color: rgb(70, 70, 70);
-}
-
-/* Add table header styling */
-.table thead th {
-    background-color: transparent !important;
-    color: black !important;
-}
-
-/* Delete performance button styling */
-.delete-performance {
-    padding: 0 !important;
-    width: 0.6rem !important;
-    height: 0.6rem !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+.page-tf-team .placementTable .event-header td {
+  background: #d8d8dc !important;
+  color: #1f2a37 !important;
 }

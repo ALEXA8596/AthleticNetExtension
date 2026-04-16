@@ -1,87 +1,87 @@
-/* Navbar styling */
-.navbar {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.navbar[data-component="athletic-navbar"] {
+  border-bottom: 1px solid rgba(17, 72, 98, 0.22);
+  box-shadow: 0 12px 28px rgba(9, 52, 73, 0.2);
+  background: linear-gradient(95deg, #14536f 0%, #1f7698 45%, #2289ac 100%);
+  backdrop-filter: blur(6px);
 }
 
-.navbar-brand {
-  padding: 0.75rem 1rem;
-  color: white !important;
+.navbar[data-component="athletic-navbar"] .navbar-brand {
+  padding-left: 0.35rem;
 }
 
-.navbar-brand strong {
-  color: white !important;
+.navbar[data-component="athletic-navbar"] .navbar-brand .navbar-item {
+  color: #ffffff !important;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
 }
 
-.navbar-start {
-  display: flex;
-  align-items: stretch;
+.navbar[data-component="athletic-navbar"] .navbar-brand strong {
+  color: #ffffff !important;
+  font-weight: 800;
 }
 
-.navbar-item {
-  display: flex;
-  align-items: center;
-  color: white !important;
+.navbar[data-component="athletic-navbar"] .navbar-item,
+.navbar[data-component="athletic-navbar"] .navbar-link {
+  color: #f7fbff !important;
+  font-size: 0.84rem;
+  font-weight: 700;
 }
 
-.navbar-link {
-  color: white !important;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
+.navbar[data-component="athletic-navbar"] .navbar-start > .navbar-item > .navbar-link,
+.navbar[data-component="athletic-navbar"] .navbar-start > a.navbar-item {
+  background: rgba(255, 255, 255, 0.12);
 }
 
-.navbar-link::after {
-  border-color: white !important;
+.navbar[data-component="athletic-navbar"] .navbar-link {
+  border-radius: 8px;
 }
 
-.navbar-link:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: white !important;
+.navbar[data-component="athletic-navbar"] .navbar-link::after {
+  border-color: #ffd8a6 !important;
 }
 
-.navbar-item.has-dropdown > .navbar-dropdown {
-  display: none;
+.navbar[data-component="athletic-navbar"] .navbar-item:hover,
+.navbar[data-component="athletic-navbar"] .navbar-link:hover,
+.navbar[data-component="athletic-navbar"] .navbar-item.has-dropdown.is-active > .navbar-link {
+  background: rgba(255, 255, 255, 0.18) !important;
+  color: #ffffff !important;
 }
 
-.navbar-dropdown {
-  position: absolute;
-  left: 0;
-  top: 100%;
-  background-color: #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+.navbar[data-component="athletic-navbar"] .navbar-burger {
+  color: #ffffff;
+  margin-right: 0.2rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.navbar[data-component="athletic-navbar"] .navbar-menu {
+  background: transparent;
+}
+
+.navbar[data-component="athletic-navbar"] .navbar-dropdown {
+  background: #ffffff;
+  border: 1px solid rgba(20, 83, 111, 0.18);
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 14px 24px rgba(17, 66, 92, 0.2);
   min-width: 220px;
-  z-index: 20;
+  padding: 0.3rem;
 }
 
-.navbar-dropdown .navbar-item {
-  color: #2a2a2a !important;
-  padding: 0.75rem 1rem;
-  display: block;
-  width: 100%;
-  text-align: left;
+.navbar[data-component="athletic-navbar"] .navbar-dropdown .navbar-item {
+  border-radius: 8px;
+  color: #1f2a37 !important;
+  font-weight: 600;
+  padding: 0.58rem 0.75rem;
 }
 
-.navbar-dropdown .navbar-item:hover {
-  background-color: rgba(0, 0, 0, 0.08);
-  color: #111111 !important;
+.navbar[data-component="athletic-navbar"] .navbar-dropdown .navbar-item:hover {
+  background: rgba(33, 126, 162, 0.11);
+  color: #10465f !important;
 }
 
-.navbar-dropdown a:not(.button) {
-  color: #2a2a2a !important;
-}
-
-.navbar-item:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: white !important;
-}
-
-.navbar-divider {
-  background-color: rgba(0, 0, 0, 0.12);
-  margin: 0.5rem 0;
-  height: 1px;
-  border: none;
+.navbar[data-component="athletic-navbar"] .navbar-divider {
+  background: rgba(20, 83, 111, 0.2);
+  margin: 0.38rem 0.1rem;
 }
 
 .navbar-item.has-dropdown.is-active > .navbar-dropdown,
@@ -89,11 +89,20 @@
   display: block;
 }
 
-/* Adjust body padding to account for sticky navbar */
-body {
-  padding-top: 0;
-}
+@media (max-width: 1023px) {
+  .navbar[data-component="athletic-navbar"] .navbar-menu.is-active {
+    background: rgba(13, 64, 89, 0.95);
+    padding: 0.3rem;
+  }
 
-.section {
-  padding-top: 1.5rem;
+  .navbar[data-component="athletic-navbar"] .navbar-item,
+  .navbar[data-component="athletic-navbar"] .navbar-link {
+    border-radius: 8px;
+  }
+
+  .navbar[data-component="athletic-navbar"] .navbar-dropdown {
+    border-radius: 10px;
+    margin-top: 0.25rem;
+    box-shadow: none;
+  }
 }

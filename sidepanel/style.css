@@ -1,121 +1,336 @@
-.fira-sans-thin {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 100;
-  font-style: normal;
+@import url("https://fonts.googleapis.com/css2?family=Fira+Sans:wght@300;400;500;600;700;800&display=swap");
+
+:root {
+  --font-body: "Fira Sans", "Segoe UI", sans-serif;
+  --ink-900: #1f2a37;
+  --ink-700: #3c4f61;
+  --ink-500: #5f7388;
+  --line-300: #d7e3ec;
+  --line-500: #9cb4c8;
+  --brand-700: #156585;
+  --brand-600: #1f7ea3;
+  --brand-500: #2f95be;
+  --brand-100: #e3f4fb;
+  --sun-500: #ec9b2f;
+  --sun-100: #fff2df;
+  --surface-0: #ffffff;
+  --surface-1: #f7fbfe;
+  --surface-2: #eef6fb;
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --shadow-soft: 0 10px 30px rgba(18, 68, 96, 0.12);
+  --shadow-strong: 0 16px 38px rgba(22, 61, 84, 0.18);
 }
 
-.fira-sans-extralight {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 200;
-  font-style: normal;
+* {
+  box-sizing: border-box;
 }
 
-.fira-sans-light {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 300;
-  font-style: normal;
+html,
+body {
+  min-height: 100%;
 }
 
-.fira-sans-regular {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 400;
-  font-style: normal;
+html {
+  background: #eaf3f8;
 }
 
-.fira-sans-medium {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 500;
-  font-style: normal;
+body {
+  margin: 0;
+  color: var(--ink-900);
+  font-family: var(--font-body);
+  background:
+    radial-gradient(circle at 8% 12%, rgba(158, 227, 255, 0.45) 0%, transparent 38%),
+    radial-gradient(circle at 92% 0%, rgba(255, 219, 176, 0.55) 0%, transparent 36%),
+    linear-gradient(180deg, #f1f9fd 0%, #f9fcfe 62%, #eff6fb 100%);
 }
 
-.fira-sans-semibold {
-  font-family: "Fira Sans", sans-serif;
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.4;
+  background-image: linear-gradient(to right, rgba(31, 126, 163, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(31, 126, 163, 0.05) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+body > * {
+  position: relative;
+  z-index: 1;
+}
+
+a {
+  color: var(--brand-700);
   font-weight: 600;
-  font-style: normal;
 }
 
-.fira-sans-bold {
-  font-family: "Fira Sans", sans-serif;
+a:hover {
+  color: var(--brand-500);
+}
+
+.app-shell {
+  width: min(1080px, 100%);
+  margin: 0 auto;
+  padding: 1.15rem 0.95rem 2rem;
+}
+
+.page-hero {
+  border: 1px solid rgba(38, 118, 154, 0.25);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(31, 126, 163, 0.12) 0%, rgba(255, 255, 255, 0.95) 52%, rgba(255, 227, 189, 0.45) 100%);
+  box-shadow: var(--shadow-soft);
+  padding: 1.1rem 1rem 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.page-kicker {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.74rem;
   font-weight: 700;
-  font-style: normal;
+  color: var(--brand-700);
 }
 
-.fira-sans-extrabold {
-  font-family: "Fira Sans", sans-serif;
+.page-title,
+.pageTitle {
+  margin: 0.35rem 0 0;
+  color: var(--ink-900);
+  font-size: clamp(1.25rem, 2.2vw, 1.82rem);
+  line-height: 1.2;
   font-weight: 800;
-  font-style: normal;
 }
 
-.fira-sans-black {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 900;
-  font-style: normal;
+.page-subtitle,
+.description {
+  margin: 0.55rem 0 0;
+  color: var(--ink-700);
+  font-size: 0.96rem;
+  line-height: 1.45;
 }
 
-.fira-sans-thin-italic {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 100;
-  font-style: italic;
+.panel-card,
+.box {
+  border: 1px solid var(--line-300);
+  border-radius: var(--radius-md);
+  background: linear-gradient(180deg, var(--surface-0) 0%, var(--surface-1) 100%);
+  box-shadow: var(--shadow-soft);
+  padding: 1rem;
 }
 
-.fira-sans-extralight-italic {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 200;
-  font-style: italic;
+.panel-card + .panel-card,
+.box + .box {
+  margin-top: 0.95rem;
 }
 
-.fira-sans-light-italic {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 300;
-  font-style: italic;
-}
-
-.fira-sans-regular-italic {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 400;
-  font-style: italic;
-}
-
-.fira-sans-medium-italic {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 500;
-  font-style: italic;
-}
-
-.fira-sans-semibold-italic {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 600;
-  font-style: italic;
-}
-
-.fira-sans-bold-italic {
-  font-family: "Fira Sans", sans-serif;
+.section-heading {
+  margin: 0 0 0.7rem;
+  font-size: 1.02rem;
+  color: var(--ink-900);
   font-weight: 700;
-  font-style: italic;
 }
 
-.fira-sans-extrabold-italic {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 800;
-  font-style: italic;
+.actions-row,
+.toolbar,
+.form-actions,
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
 }
 
-.fira-sans-black-italic {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 900;
-  font-style: italic;
+.toolbar {
+  margin-top: 0.95rem;
 }
 
-
-.container {
-    display: flex;
-    align-items: center; /* Vertically centers the content */
-    justify-content: center; /* Horizontally centers the content (optional) */
-    height: 100vh; /* Full viewport height to demonstrate vertical centering */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 0.8rem;
 }
 
-.welcomeMessage {
-  font-family: "Fira Sans", sans-serif;
-  font-weight: 400;
-  font-style: normal;
+.span-6 {
+  grid-column: span 6;
+}
+
+.span-12 {
+  grid-column: span 12;
+}
+
+.hint-text {
+  margin: 0;
+  color: var(--ink-500);
+  font-size: 0.82rem;
+}
+
+.toggle-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1rem;
+}
+
+.toggle-list .checkbox {
+  margin-right: 0;
+  color: var(--ink-900);
+}
+
+.results-stack {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.9rem;
+}
+
+.results-card {
+  border: 1px solid var(--line-300);
+  border-radius: var(--radius-md);
+  background: var(--surface-0);
+  padding: 0.9rem;
+}
+
+.table-shell {
+  overflow-x: auto;
+  border: 1px solid var(--line-300);
+  border-radius: var(--radius-sm);
+  background: var(--surface-0);
+}
+
+table.table {
+  margin-bottom: 0;
+  border-collapse: collapse;
+}
+
+.table thead th {
+  color: var(--ink-900);
+  background: #eef6fb;
+  border-bottom: 1px solid var(--line-300);
+  font-size: 0.84rem;
+}
+
+.table td {
+  color: var(--ink-900);
+  font-size: 0.84rem;
+  vertical-align: middle;
+}
+
+.table.is-striped tbody tr:not(.is-selected):nth-child(even) {
+  background: rgba(28, 134, 177, 0.05);
+}
+
+canvas {
+  width: 100%;
+  max-width: 100%;
+  border-radius: var(--radius-sm);
+}
+
+.quick-link-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.7rem;
+}
+
+.quick-link-card {
+  display: block;
+  text-decoration: none;
+  border: 1px solid var(--line-300);
+  border-radius: var(--radius-md);
+  background: var(--surface-0);
+  padding: 0.8rem 0.9rem;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.quick-link-card strong {
+  display: block;
+  color: var(--ink-900);
+  font-size: 0.93rem;
+}
+
+.quick-link-card span {
+  display: block;
+  margin-top: 0.22rem;
+  color: var(--ink-700);
+  font-size: 0.82rem;
+}
+
+.quick-link-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--brand-500);
+  box-shadow: var(--shadow-soft);
+}
+
+.tab-switch {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+}
+
+.tablink {
+  border: 1px solid var(--line-500);
+  border-radius: var(--radius-sm);
+  background: #ffffff;
+  color: var(--ink-900);
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 0.6rem 0.7rem;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.tablink:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(24, 88, 122, 0.16);
+}
+
+.tabcontent {
+  display: none;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.tabcontent.active {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.empty-state {
+  border: 1px dashed var(--line-500);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.7);
+  padding: 1rem;
+  color: var(--ink-700);
+}
+
+.label {
+  color: var(--ink-900);
+}
+
+.subtitle {
+  color: var(--ink-900) !important;
+}
+
+@media (max-width: 980px) {
+  .app-shell {
+    padding: 0.95rem 0.7rem 1.5rem;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .span-6,
+  .span-12 {
+    grid-column: span 1;
+  }
+
+  .panel-card,
+  .box {
+    padding: 0.85rem;
+  }
 }

@@ -5,54 +5,52 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Athletic Helper</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
   <link rel="stylesheet" href="./style.css" />
   <link rel="stylesheet" href="../../navbar.css" />
   <script src="../../../public/jquery-3.7.1.min.js"></script>
   <script src="../../navbar.js"></script>
 </head>
 
-<body>
-  <div class="container">
-    <section class="section">
-      <h1 class="title pageTitle">Race Analyzer</h1>
-      <p class="my-3 description">
-        This page analyzes races, showing time distributions and other statistics.
+<body class="page-xc-meet">
+  <main class="app-shell">
+    <section class="page-hero">
+      <p class="page-kicker">Cross Country</p>
+      <h1 class="page-title">Race Analyzer</h1>
+      <p class="page-subtitle">
+        Explore distribution and histogram views for each meet division.
       </p>
-      <div class="box p-3">
-        <div class="field">
-          <div class="control">
-            <div class="select">
-              <select id="race" disabled>
-              </select>
-            </div>
-          </div>
+    </section>
+
+    <section class="panel-card">
+      <div class="toolbar">
+        <label class="label" for="race" style="margin: 0;">Division</label>
+        <div class="select">
+          <select id="race" disabled>
+          </select>
         </div>
+      </div>
+      <div class="box" style="margin-top: 0.85rem;">
         <canvas id="raceDistribution"></canvas>
       </div>
-      <div class="box p-3">
-        <!-- Histogram -->
-        <div class="field is-horizontal">
-          <div class="field-label is-normal">
-            <label class="label has-text-white">Interval (s):</label>
-          </div>
-          <div class="field-body">
-            <div class="control">
-              <input type="number" id="histogramInterval" class="input histogramIntervalInput" value="30" min="5" max="120">
-            </div>
-          </div>
-        </div>
+    </section>
+
+    <section class="panel-card">
+      <div class="toolbar">
+        <label class="label" for="histogramInterval" style="margin: 0;">Histogram Interval (seconds)</label>
+        <input type="number" id="histogramInterval" class="input histogramIntervalInput" value="30" min="5" max="120" />
+      </div>
+      <div class="box" style="margin-top: 0.85rem;">
         <canvas id="histogram"></canvas>
       </div>
+    </section>
 
-  </div>
+  </main>
   <script src="../../../build/bundle.js"></script>
   <script src="script.js"></script>
   <script src="../../../public/luxon.min.js"></script>
   <script src="../../../public/chart.min.js"></script>
   <script src="../../../public/chartjs-adapter-luxon.js"></script>
-  </section>
-  </div>
 </body>
 
 </html>

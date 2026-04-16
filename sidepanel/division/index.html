@@ -16,140 +16,144 @@
   <script src="../common/accordion.js"></script>
 </head>
 
-<body>
-  <div class="container">
-    <section class="section">
-      <h1 class="my-3 title pageTitle">Division Meet Simulator</h1>
-      <p class="my-3 description">
-        This page simulates a meet between all teams in a selected division. You can also add teams manually.
+<body class="page-division">
+  <main class="app-shell">
+    <section class="page-hero">
+      <p class="page-kicker">Division</p>
+      <h1 class="page-title">Division Meet Simulator</h1>
+      <p class="page-subtitle">
+        Simulate a meet for all teams in a selected division and add custom schools as needed.
       </p>
-      <!-- Create a textbox using bulma for the opposing team's id -->
-      <div class="container box py-3">
-        <form id="teamsInput">
+    </section>
+
+    <section class="panel-card">
+      <form id="teamsInput">
+        <div class="field">
+          <label class="label">Select Division</label>
+          <div class="control">
+            <div class="select is-fullwidth">
+              <select id="divisionSelect">
+                <option value="">Loading divisions...</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div id="teamSelectorContainer" class="field">
+          <label class="label">Teams</label>
+          <div class="team-tag-container"></div>
+          <div class="control">
+            <input type="text" class="input team-search" placeholder="Search for a team to add" autocomplete="off" />
+            <div class="suggestions-box"></div>
+          </div>
+        </div>
+
+        <button type="button" class="accordion subtitle is-5">Saved Team Lists</button>
+        <div class="panel">
           <div class="field">
-            <label class="label has-text-white">Select Division</label>
+            <label class="label">Saved Lists</label>
             <div class="control">
               <div class="select is-fullwidth">
-                <select id="divisionSelect">
-                  <option value="">Loading divisions...</option>
+                <select id="teamListSelectDivision">
+                  <option value="">Select saved list...</option>
                 </select>
               </div>
             </div>
           </div>
-
-          <div id="teamSelectorContainer" class="field">
-            <div class="team-tag-container"></div>
+          <div class="field">
+            <label class="label">List Name</label>
             <div class="control">
-              <input type="text" class="input team-search" placeholder="Search for a team to add" autocomplete="off">
-              <div class="suggestions-box"></div>
+              <input type="text" id="teamListNameDivision" class="input" placeholder="Enter list name" />
             </div>
           </div>
+          <div class="buttons">
+            <button type="button" id="loadTeamListDivision" class="button is-link is-light">Load</button>
+            <button type="button" id="saveTeamListDivision" class="button is-success is-light">Save as New</button>
+            <button type="button" id="updateTeamListDivision" class="button is-primary is-light">Update</button>
+            <button type="button" id="deleteTeamListDivision" class="button is-danger is-light">Delete</button>
+          </div>
+        </div>
 
-          <button type="button" class="accordion subtitle is-5 has-text-white">Saved Team Lists</button>
-          <div class="panel">
-            <div class="field">
-              <label class="label has-text-white">Saved Lists</label>
-              <div class="control">
-                <div class="select is-fullwidth">
-                  <select id="teamListSelectDivision">
-                    <option value="">Select saved list...</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div class="field">
-              <label class="label has-text-white">List Name</label>
-              <div class="control">
-                <input type="text" id="teamListNameDivision" class="input" placeholder="Enter list name">
-              </div>
-            </div>
-            <div class="buttons">
-              <button type="button" id="loadTeamListDivision" class="button is-link is-light">Load</button>
-              <button type="button" id="saveTeamListDivision" class="button is-success is-light">Save as New</button>
-              <button type="button" id="updateTeamListDivision" class="button is-primary is-light">Update</button>
-              <button type="button" id="deleteTeamListDivision" class="button is-danger is-light">Delete</button>
-            </div>
+        <div class="toolbar">
+          <button type="submit" id="simulateButton" class="button is-link">Simulate</button>
+          <button type="button" id="printResults" class="button is-info is-light">Print Results</button>
+          <div class="select">
+            <select id="distance"></select>
           </div>
-          <div class="container mt-3">
-            <button type="submit" id="simulateButton" class="button is-primary">Simulate</button>
-            <button type="button" id="printResults" class="button is-info">
-              <span class="icon">
-                <span>&#x1F5A8;</span>
-              </span>
-              <span>Print Results</span>
-            </button>
-            <div class="select">
-              <select id="distance">
+        </div>
+      </form>
+    </section>
 
-              </select>
-            </div>
-          </div>
-        </form>
+    <section id="resultsDiv" class="results-stack">
+      <div id="boys" class="results-card">
+        <h2 class="subtitle">Boys</h2>
+        <h3 class="subtitle is-5">Placements</h3>
+        <div class="table-shell">
+          <table class="placementTable table is-striped is-fullwidth">
+            <thead>
+              <tr>
+                <th>Place</th>
+                <th>Grade</th>
+                <th>Name</th>
+                <th>Time</th>
+                <th>Team</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <h3 class="subtitle is-5">Team Scores</h3>
+        <div class="table-shell">
+          <table class="scoreTable table is-striped is-fullwidth">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Team</th>
+                <th>Score</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
 
-        <br>
-        <div id="resultsDiv">
-          <div id="boys">
-            <h2 class="subtitle">Boys</h2>
-            <h3 class="subtitle is-5">Placements</h3>
-            <table class="placementTable table is-striped is-fullwidth">
-              <thead>
-                <tr>
-                  <th>Place</th>
-                  <th>Grade</th>
-                  <th>Name</th>
-                  <th>Time</th>
-                  <th>Team</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-            <h3 class="subtitle is-5">Team Scores</h3>
-            <table class="scoreTable table is-striped is-fullwidth">
-              <thead>
-                <tr>
-                  <th>Rank</th>
-                  <th>Team</th>
-                  <th>Score</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
-          <br>
-          <div id="girls">
-            <h2 class="subtitle">Girls</h2>
-            <h3 class="subtitle is-5">Placements</h3>
-            <table class="placementTable table is-striped is-fullwidth">
-              <thead>
-                <tr>
-                  <th>Place</th>
-                  <th>Grade</th>
-                  <th>Name</th>
-                  <th>Time</th>
-                  <th>Team</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-            <h3 class="subtitle is-5">Team Scores</h3>
-            <table class="scoreTable table is-striped is-fullwidth">
-              <thead>
-                <tr>
-                  <th>Rank</th>
-                  <th>Team</th>
-                  <th>Score</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
+      <div id="girls" class="results-card">
+        <h2 class="subtitle">Girls</h2>
+        <h3 class="subtitle is-5">Placements</h3>
+        <div class="table-shell">
+          <table class="placementTable table is-striped is-fullwidth">
+            <thead>
+              <tr>
+                <th>Place</th>
+                <th>Grade</th>
+                <th>Name</th>
+                <th>Time</th>
+                <th>Team</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <h3 class="subtitle is-5">Team Scores</h3>
+        <div class="table-shell">
+          <table class="scoreTable table is-striped is-fullwidth">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Team</th>
+                <th>Score</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
         </div>
       </div>
     </section>
+
     <script src="../common/teamSelector.js"></script>
-    <script src="script.js"></script>
     <script src="../../build/bundle.js"></script>
-  </div>
+    <script src="script.js"></script>
+  </main>
 </body>
 
 </html>

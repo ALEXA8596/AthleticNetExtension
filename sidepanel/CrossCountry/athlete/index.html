@@ -2,33 +2,39 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Athletic Helper</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
-  <link rel="stylesheet" href="./style.css">
-  <link rel="stylesheet" href="../../navbar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
+  <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="../../navbar.css" />
   <script src="../../navbar.js"></script>
 </head>
 
-<body>
-  <div class="container">
-    <section class="section">
-        <h1 class="title pageTitle">Athlete Page</h1>
-        <button id='getUrlButton' class="button is-primary my-2">Load Athlete Performances</button>
-        
-        <!-- <p id="current-tab-url" class="content"></p> -->
-        
-        <!-- DropDown Selector of Events -->
-        <div class="select my-2">
-          <select name="distance" id="distanceDropDown" disabled="true">
+<body class="page-xc-athlete">
+  <main class="app-shell">
+    <section class="page-hero">
+      <p class="page-kicker">Cross Country</p>
+      <h1 class="page-title">Athlete Progression</h1>
+      <p class="page-subtitle">
+        Load an athlete page to graph performance progression over time for each distance.
+      </p>
+    </section>
+
+    <section class="panel-card">
+      <div class="toolbar">
+        <button id="getUrlButton" class="button is-link" type="button">Reload Athlete Data</button>
+        <div class="select">
+          <select name="distance" id="distanceDropDown" disabled>
           </select>
         </div>
-        <div class="box my-2 chart-container">
-          <canvas id="myChart"></canvas>
-        </div>
+      </div>
+      <div class="box chart-container" style="margin-top: 0.85rem;">
+        <canvas id="myChart"></canvas>
+      </div>
     </section>
-  </div>
+  </main>
+
   <script src="../../../build/bundle.js"></script>
   <script src="script.js"></script>
   <script src="../../../public/luxon.min.js"></script>

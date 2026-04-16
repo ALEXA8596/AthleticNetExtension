@@ -2,33 +2,43 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Athletic Helper</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
-  <link rel="stylesheet" href="./style.css">
-  <link rel="stylesheet" href="../../navbar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
+  <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="../../navbar.css" />
   <script src="../../navbar.js"></script>
 </head>
 
-<body>
-  <div class="container">
-    <section class="section">
-      <h1 class="title pageTitle">Event Progression</h1>
-      <div class="select m-3">
-        <select name="event" id="eventDropDown" disabled="true">
-        </select>
+<body class="page-tf-athlete">
+  <main class="app-shell">
+    <section class="page-hero">
+      <p class="page-kicker">Track And Field</p>
+      <h1 class="page-title">Event Progression</h1>
+      <p class="page-subtitle">
+        Visualize performance trends for each event and event variation.
+      </p>
+    </section>
+
+    <section class="panel-card">
+      <div class="toolbar">
+        <label class="label" for="eventDropDown" style="margin: 0;">Event</label>
+        <div class="select">
+          <select name="event" id="eventDropDown" disabled>
+          </select>
+        </div>
       </div>
-      <div class="chart-container">
-        <canvas class="box" id="myChart"></canvas>
+      <div class="box chart-container" style="margin-top: 0.85rem;">
+        <canvas id="myChart"></canvas>
       </div>
     </section>
-  </div>
+  </main>
 
-  <script src="script.js"></script>
+  <script src="../../../build/bundle.js"></script>
   <script src="../../../public/luxon.min.js"></script>
   <script src="../../../public/chart.min.js"></script>
-  <script src="../../../build/bundle.js"></script>
+  <script src="script.js"></script>
 </body>
 
 </html>

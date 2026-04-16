@@ -5,6 +5,31 @@ let nonDualTeamSelector = null;
 let dualTeamSelector = null;
 let nonDualListManager = null;
 let dualListManager = null;
+const RELAY_SPLIT_EVENT_TYPE_ID = 98;
+const DEFAULT_NON_DUAL_ATHLETES_PER_EVENT = 8;
+const DEFAULT_DUAL_ATHLETES_PER_EVENT = 5;
+
+function isRelaySplitPerformance(performance) {
+  const eventTypeId = performance?.EventTypeID ?? performance?.IDEventType;
+  return Number(eventTypeId) === RELAY_SPLIT_EVENT_TYPE_ID;
+}
+
+function getAthletesPerEventLimit(dual) {
+  const inputId = dual ? "dualAthletesPerEvent" : "nonDualAthletesPerEvent";
+  const fallback = dual
+    ? DEFAULT_DUAL_ATHLETES_PER_EVENT
+    : DEFAULT_NON_DUAL_ATHLETES_PER_EVENT;
+  const parsedValue = Number.parseInt(
+    document.getElementById(inputId)?.value,
+    10
+  );
+
+  if (!Number.isFinite(parsedValue) || parsedValue < 1) {
+    return fallback;
+  }
+
+  return parsedValue;
+}
 
 /**
  * Tab functionality
@@ -258,7 +283,10 @@ async function simulateMeet(teamIds, fullMeetResponse, dual) {
       const results = event.results;
       for (j = 0; j < results.length; j++) {
         const athlete = results[j];
-        if (!teamIds.includes(String(athlete.TeamID))) {
+        if (
+          !teamIds.includes(String(athlete.TeamID)) ||
+          isRelaySplitPerformance(athlete)
+        ) {
           results.splice(j, 1);
           j--;
         }
@@ -267,7 +295,8 @@ async function simulateMeet(teamIds, fullMeetResponse, dual) {
       fullMeetResponse.flatEvents[i] = {
         ...event,
         results: event.results.filter((athlete) =>
-          teamIds.includes(String(athlete.TeamID))
+          teamIds.includes(String(athlete.TeamID)) &&
+          !isRelaySplitPerformance(athlete)
         ),
       };
     }
@@ -288,6 +317,9 @@ async function simulateMeet(teamIds, fullMeetResponse, dual) {
       const resultsToPush = [];
 
       for (const athlete of event.results) {
+        if (isRelaySplitPerformance(athlete)) {
+          continue;
+        }
         if (isAthleteGradeSelected(athlete)) {
           athlete.SchoolID = athlete.TeamID;
           resultsToPush.push(athlete);
@@ -296,13 +328,6 @@ async function simulateMeet(teamIds, fullMeetResponse, dual) {
 
       events[gender][event.Event] = resultsToPush;
     });
-
-    // slice the arrays to only include the top 10
-    for (const gender in events) {
-      for (const event in events[gender]) {
-        events[gender][event] = events[gender][event].slice(0, 5);
-      }
-    }
 
     // Get selected grades
     const selectedGrades = Array.from(
@@ -323,6 +348,7 @@ async function simulateMeet(teamIds, fullMeetResponse, dual) {
       "300m Hurdles",
       "4x100 Relay",
       "4x400 Relay",
+      "4x800 Relay",
       "High Jump",
       "Pole Vault",
       "Long Jump",
@@ -342,6 +368,7 @@ async function simulateMeet(teamIds, fullMeetResponse, dual) {
       "300m Hurdles",
       "4x100 Relay",
       "4x400 Relay",
+      "4x800 Relay",
       "High Jump",
       "Pole Vault",
       "Long Jump",
@@ -481,6 +508,9 @@ async function simulateMeet(teamIds, fullMeetResponse, dual) {
       const resultsToPush = [];
 
       for (const athlete of event.results) {
+        if (isRelaySplitPerformance(athlete)) {
+          continue;
+        }
         if (isAthleteGradeSelected(athlete)) {
           athlete.SchoolID = athlete.TeamID;
           resultsToPush.push(athlete);
@@ -507,6 +537,7 @@ async function simulateMeet(teamIds, fullMeetResponse, dual) {
       "300m Hurdles",
       "4x100 Relay",
       "4x400 Relay",
+      "4x800 Relay",
       "High Jump",
       "Pole Vault",
       "Long Jump",
@@ -526,6 +557,7 @@ async function simulateMeet(teamIds, fullMeetResponse, dual) {
       "300m Hurdles",
       "4x100 Relay",
       "4x400 Relay",
+      "4x800 Relay",
       "High Jump",
       "Pole Vault",
       "Long Jump",
@@ -650,12 +682,15 @@ async function updateResults(results, dual) {
   const resultsDiv = dual
     ? document.getElementById("resultsDiv")
     : document.getElementById("nonDualMeetResultsDiv");
+  const maxAthletesToShow = getAthletesPerEventLimit(dual);
   ["boys", "girls"].forEach(async (gender) => {
     let genderAbbr;
     if (gender == "boys") genderAbbr = "M";
     if (gender == "girls") genderAbbr = "F";
     const genderResults = placementResults[genderAbbr];
-    const table = resultsDiv.querySelector(`#${gender} .placementTable`);
+    const table = resultsDiv.querySelector(
+      `[data-gender="${gender}"] .placementTable`
+    );
 
     // Clear table contents
     table.innerHTML = `
@@ -697,7 +732,7 @@ async function updateResults(results, dual) {
         const fieldEvents = [ "High Jump", "Pole Vault", "Long Jump", "Triple Jump", "Shot Put", "Discus"];
 
         // Add event results
-        event.forEach((record, j) => {
+        event.slice(0, maxAthletesToShow).forEach((record, j) => {
           const row = document.createElement("tr");
           row.dataset.eventName = eventName;
           row.dataset.gender = genderAbbr;
@@ -734,7 +769,9 @@ async function updateResults(results, dual) {
       results.points[genderAbbr] = Object.fromEntries(
         Object.entries(results.points[genderAbbr]).sort((a, b) => b[1] - a[1])
       );
-      const scoreTable = resultsDiv.querySelector(`#${gender} > .scoreTable`);
+      const scoreTable = resultsDiv.querySelector(
+        `[data-gender="${gender}"] > .scoreTable`
+      );
       scoreTable.innerHTML = "";
 
       const teamEntries = await Promise.all(
